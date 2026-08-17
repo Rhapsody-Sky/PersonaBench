@@ -149,11 +149,6 @@ svg {
   width: 46px;
   height: 46px;
   object-fit: contain;
-  filter: invert(1) brightness(1.35);
-}
-
-body[data-theme="light"] .brand img {
-  filter: none;
 }
 
 .brand span,

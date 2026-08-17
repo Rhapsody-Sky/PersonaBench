@@ -1,59 +1,88 @@
-# PersonaBench
+# Persona Bench
 
-PersonaBench is a standalone, local-first character workshop for designing TomoriBot personas. It guides creators from a compact character concept through attributes, voice, sample dialogue, appearance, and an import-ready preset.
+Persona Bench is a private, local-first workbench for designing reusable characters and personas for TomoriBot or any other LLM. It turns character ideas into structured persona data that humans, language models, and coding agents can understand and continue editing.
 
-## Features
+[Open Persona Bench](https://personabench.rhapsody.me/)
 
-- Guided one-page character design workflow
-- Browser-local projects stored in IndexedDB
-- Project duplication and named version checkpoints
-- Avatar upload with framing controls
-- Character attributes with Tomori visibility flags
-- Repeatable sample dialogues
-- Five Companion color palettes plus light and dark themes
-- Native Tomori PNG and JSON exports
-- Complete PersonaBench backup export with project history
-- Optional linked workspace file for local agent collaboration, with IndexedDB backup and conflict resolution
+## What you can build
 
-PersonaBench has no backend. Drafts, avatars, and versions stay in the current browser until they are exported. Clearing the browser's site data also removes local projects, so create a **Builder backup** for durable storage.
+- Identity, appearance, personality, background, relationships, voice, knowledge, and boundaries
+- Conditional behavior modes such as “When NAME sees physical money…”
+- Example conversations that demonstrate tone and reactions
+- Custom attributes for project-specific details
+- Avatar images and visual-generation prompts
+- TomoriBot-specific trigger words when TomoriBot is selected as the target
 
-## Local development
+Persona Bench offers two output targets:
 
-Install [Bun](https://bun.sh/), then run:
+- **Any LLM** keeps the character platform-neutral and exports explanatory `_instruction` fields alongside the persona data. These act as compact prompts that tell an LLM how to interpret and apply each section.
+- **TomoriBot** enables Tomori-specific fields and export formats, including trigger words and character-card PNG export.
 
-```powershell
+## Local-first workflow
+
+Persona data remains in the browser unless you explicitly export it or link a workspace file. Persona Bench uses IndexedDB for automatic local persistence and keeps recoverable local versions while you edit.
+
+A typical workflow is:
+
+1. Choose TomoriBot or a general LLM as the target.
+2. Build the persona section by section.
+3. Add behavior modes and example dialogue to make the character more consistent.
+4. Preview and validate the result.
+5. Export the persona or link it to a workspace file for ongoing collaboration.
+
+## Linked workspace file
+
+The linked-file mode lets Persona Bench and a local agent work on the same JSON file:
+
+- Browser edits are saved to IndexedDB and the linked file.
+- External file changes are detected and can be reloaded into the workbench.
+- Conflicting browser and file changes are surfaced instead of silently overwriting work.
+- Local version history provides an additional recovery layer.
+
+This feature requires a browser with the File System Access API, such as a current Chromium-based browser, and a secure context such as HTTPS or localhost. The browser may ask you to grant file access again after a restart.
+
+## Agent skill
+
+The repository includes an agent-readable skill at:
+
+`Skills/persona-bench-collaborator/SKILL.md`
+
+It explains the project JSON structure, the purpose of every section, safe editing rules, behavior modes, and the export/import workflow. Give an LLM or local coding agent access to that skill together with the linked persona JSON so it can collaborate without guessing the schema.
+
+The production build automatically copies the skill into `dist/Skills/persona-bench-collaborator/`, where it can also be served from the website.
+
+## Export formats
+
+- **General LLM JSON** — portable persona data with detailed `_instruction` guidance for each section
+- **TomoriBot JSON** — Tomori-compatible structured character data
+- **TomoriBot PNG** — a character card containing the Tomori persona payload
+- **Builder backup JSON** — a lossless Persona Bench project file intended for later reimport and continued editing
+
+Use the Builder backup when you want to preserve every workbench field. Runtime-oriented exports may intentionally omit editor-only state.
+
+## Development
+
+Requirements: [Bun](https://bun.sh/) or a compatible Node.js package manager.
+
+```bash
 bun install
 bun run dev
 ```
 
-Open the local address printed by Vite. PersonaBench does not require a TomoriBot server, Discord account, or database.
+Create a production build with:
 
-For a production build:
-
-```powershell
+```bash
 bun run build
 ```
 
-## Exports
+The deployable static site is written to `dist/`. Upload the contents of that directory to the web root behind Nginx or another static web server. Persona Bench does not require PM2 or a backend service for normal use.
 
-### Tomori PNG
+For browser routing, configure the server to fall back to `index.html`. Serve the site over HTTPS so secure browser APIs such as `crypto.randomUUID()` and linked-file access are available.
 
-Creates a shareable avatar PNG with a native `TomoriPreset` JSON payload embedded in its `TomoriPreset` metadata field.
+## Privacy
 
-### Tomori JSON
-
-Exports the native Tomori preset without avatar image data.
-
-### Builder backup
-
-Preserves the complete editable project, avatar, tutorial fields, and named version history. Builder backups can be imported into PersonaBench later.
-
-TomoriBot can import the PNG or JSON through `/persona import` or the dashboard persona importer.
-
-## Agent collaboration skill
-
-The repository includes a reusable skill at [`Skills/persona-bench-collaborator/SKILL.md`](Skills/persona-bench-collaborator/SKILL.md). It teaches compatible LLMs and coding agents how to understand, edit, validate, export, and reimport Persona Bench projects. A local agent can edit a linked Builder-backup file while Persona Bench is open; IndexedDB remains the local safety copy and the UI pauses for conflict resolution if both sides change concurrently. Manual Builder-backup exchange remains available.
+Persona Bench has no application backend. Browser storage, imported files, linked files, and downloads remain under the user's control. Hosting providers can still receive ordinary static-site access logs.
 
 ## License
 
-PersonaBench is available under the [GNU General Public License v3.0](LICENSE).
+Released under the [GNU General Public License v3.0](LICENSE).

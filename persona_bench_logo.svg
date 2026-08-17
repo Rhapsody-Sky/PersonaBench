@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">Persona Bench</title>
+  <desc id="description">A gold and teal PB monogram on a dark rounded workbench tile.</desc>
+  <defs>
+    <linearGradient id="frame" x1="18" y1="16" x2="112" y2="114" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f0bd55"/>
+      <stop offset="0.48" stop-color="#d89424"/>
+      <stop offset="0.52" stop-color="#42d7d1"/>
+      <stop offset="1" stop-color="#159b99"/>
+    </linearGradient>
+    <radialGradient id="surface" cx="0" cy="0" r="1" gradientTransform="translate(43 29) rotate(48) scale(116)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2c2232"/>
+      <stop offset="1" stop-color="#100c14"/>
+    </radialGradient>
+  </defs>
+  <rect x="7" y="7" width="114" height="114" rx="29" fill="url(#surface)" stroke="url(#frame)" stroke-width="5"/>
+  <path d="M39 94V34h22c13 0 22 8 22 19s-9 19-22 19H48" fill="none" stroke="#efb84d" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M65 34v60h18c13 0 21-7 21-18 0-9-6-15-16-17 8-2 13-7 13-14 0-7-4-11-8-11" fill="none" stroke="#38cbc6" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M65 59h18" fill="none" stroke="#f7f2f8" stroke-opacity=".72" stroke-width="6" stroke-linecap="round"/>
+  <path d="M103 20v10M98 25h10" fill="none" stroke="#f5d98f" stroke-width="3.5" stroke-linecap="round"/>
+</svg>
