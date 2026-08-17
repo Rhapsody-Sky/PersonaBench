@@ -1,4 +1,4 @@
 interface:
   display_name: "Persona Bench Collaborator"
-  short_description: "Create, edit, export, and import Persona Bench personas"
-  default_prompt: "Use $persona-bench-collaborator to help me create or revise a Persona Bench project JSON."
+  short_description: "Build personas with distinctive, natural dialogue"
+  default_prompt: "Use $persona-bench-collaborator to create or revise a Persona Bench persona with a distinctive voice and character-specific sample dialogue."

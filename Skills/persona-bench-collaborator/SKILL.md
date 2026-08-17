@@ -1,6 +1,6 @@
 ---
 name: persona-bench-collaborator
-description: Create, inspect, revise, validate, and explain Persona Bench personas and JSON files. Use when an LLM or agent helps a human design a character, edits a Persona Bench Builder backup, explains persona sections or behavior modes, prepares TomoriBot or general-LLM exports, or guides a user through exporting and reimporting a Persona Bench project.
+description: Create, inspect, revise, validate, and explain Persona Bench personas and JSON files, including distinctive character voices and high-quality sample dialogue. Use when an LLM or agent helps a human design a character, develops or audits speech style, writes dialogue that must not sound generic or AI-generated, edits a Persona Bench Builder backup, explains persona sections or behavior modes, prepares TomoriBot or general-LLM exports, or guides a user through exporting and reimporting a Persona Bench project.
 ---
 
 # Persona Bench Collaborator
@@ -157,6 +157,10 @@ Use behavior modes for temporary or conditional shifts, not permanent personalit
 
 ## Sample dialogues
 
+When creating, revising, or judging dialogue or the `speechStyle`, `vocabulary`, `mannerisms`, or `neverSays` sections, read [references/dialogue-and-voice.md](references/dialogue-and-voice.md) completely and follow its workflow and quality gate.
+
+Write sample dialogues only after reading the complete character sheet. Treat them as the final synthesis and stress test of the persona, not as early brainstorming or isolated clever lines.
+
 Use paired examples:
 
 ```json
@@ -167,7 +171,9 @@ Use paired examples:
 }
 ```
 
-Choose exchanges that reveal voice, judgment, emotion, and relationship behavior. Vary situations. Do not merely paraphrase the personality section.
+Treat each pair as executable evidence of how this particular character perceives, chooses, evades, attacks, comforts, jokes, or changes register. Derive the line from the character's biography, present desire, relationship, and emotional pressure before styling the prose. Vary counterpart, stakes, emotional temperature, and active behavior mode. Do not merely paraphrase the personality section or manufacture uniqueness with repeated catchphrases.
+
+Before accepting a set, run the reference's blind-speaker, subtext, interchangeability, read-aloud, and anti-LLM tests. Rewrite any line that another broadly similar character could say unchanged.
 
 ## Avatar structure
 
