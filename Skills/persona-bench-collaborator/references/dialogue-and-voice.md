@@ -15,6 +15,7 @@ Persona Bench samples are **portable voice probes**, not fragments of one contin
 Every sample exchange must perform at least two jobs:
 
 - demonstrate a repeatable voice pattern;
+- demonstrate a characteristic reaction or decision pattern;
 - reveal a judgment, desire, vulnerability, relationship dynamic, or behavioral rule.
 
 Prefer lines that also create movement: a refusal changes terms, a joke tests intimacy, an evasion exposes fear, or a concession costs something.
@@ -31,6 +32,8 @@ Before drafting, create a private evidence map for the set:
 - which facts should shape choices silently rather than be mentioned.
 
 Each exchange should embody two to four relevant facts without reciting them. Across the complete set, cover the character's most important voice-producing causes. Do not force the entire sheet into every answer.
+
+Treat the final pairs as behavioral few-shot examples for the model that will run the persona. They teach not only how the character phrases an answer, but what the character notices, prioritizes, assumes, resists, conceals, and does in response.
 
 ## Build a voice fingerprint
 
@@ -144,7 +147,16 @@ Draft disposable speech about an irrelevant situation before writing final sampl
 
 ### Step 4: Select a diagnostic slate
 
-Create a set that samples different sides of the same person. Prefer six to ten exchanges when the project allows it:
+Derive situations from this character before choosing coverage categories. For every proposed pair, privately record:
+
+- the persona fact or tension that makes this interaction probable;
+- who is likely to say the input and what their relationship is to the character;
+- the choice, pressure, temptation, misunderstanding, or opportunity the input creates;
+- the reaction pattern the output should teach a future model.
+
+Reject a prompt selected merely because it is a standard personality-test question. Prefer conversation fragments that could plausibly recur in this character's life: a colleague challenges their method, a sibling invokes old history, a client offers the wrong incentive, a rival notices a concealed weakness, or an ordinary object activates a documented behavior mode. Instantiate these from the actual sheet; do not add unsupported canon.
+
+Create a set that samples different sides of the same person. Prefer six to ten character-specific exchanges when the project allows it:
 
 1. low-stakes baseline;
 2. disagreement or refusal;
@@ -160,6 +172,8 @@ Create a set that samples different sides of the same person. Prefer six to ten 
 Avoid making every user input a direct interview question. Use accusations, interruptions, bad offers, shared observations, silence, mistaken assumptions, and concrete events.
 
 These are diagnostic prompts, not a connected scene. The local “want” exists only to select a speech act for that turn; it does not add new canon or require a scene objective field in the persona.
+
+Keep `input` concise and speakable. It should contain enough relational or situational pressure to make the response meaningful without surrounding narration. Phrase it as something a real interlocutor would say, not “How would you react if...?” or “Tell me about your personality.”
 
 ### Step 5: Draft from private intent
 
@@ -246,6 +260,7 @@ After the individual tests, read all outputs consecutively as one performance an
 4. Can the distinctive choices be traced to the complete persona rather than an arbitrary verbal gimmick?
 5. Does the voice change naturally by relationship and pressure while remaining recognizably the same person?
 6. Do the samples give another writer or model enough evidence to extrapolate the voice to an unseen prompt?
+7. Do the chosen inputs resemble moments this character is actually likely to encounter, and do the outputs demonstrate their characteristic reactions?
 
 If any answer is no, the work is not finished. Revisit the causal anchors and rhythm specification, then replace the weakest samples. Do not repair weak identity by adding a catchphrase, accent, unusual punctuation, random quirk, or louder mannerism.
 
@@ -258,6 +273,14 @@ Can each notable verbal choice be traced to biography, worldview, desire, relati
 ### Full-sheet embodiment test
 
 Can every accepted sample be annotated privately with the specific persona facts it embodies? Does the set express the major voice-relevant material from the complete sheet without paraphrasing section text? If not, revise only after rereading the missing sections.
+
+### Scenario-fit test
+
+Is this input unusually relevant or plausibly recurrent for this character because of their life, relationships, duties, interests, fears, flaws, or modes? Could the same prompt appear unchanged in almost any persona sheet? Replace generic prompts unless an ordinary situation is deliberately testing the character's distinctive baseline.
+
+### Reaction-model test
+
+Does the output teach a future model what this character is likely to do conversationally and psychologically, not just how they decorate a sentence? Verify the selected attention, assumption, priority, tactic, and boundary. Across the set, show multiple characteristic reactions rather than one tone repeated under different wording.
 
 ### Blind-speaker test
 

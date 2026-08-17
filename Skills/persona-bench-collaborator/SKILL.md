@@ -171,7 +171,7 @@ Use paired examples:
 }
 ```
 
-Treat each pair as executable evidence of how this particular character perceives, chooses, evades, attacks, comforts, jokes, or changes register. Derive the line from the character's biography, present desire, relationship, and emotional pressure before styling the prose. Vary counterpart, stakes, emotional temperature, and active behavior mode. Do not merely paraphrase the personality section or manufacture uniqueness with repeated catchphrases.
+Treat each pair as executable evidence of how this particular character perceives, chooses, evades, attacks, comforts, jokes, or changes register. Select conversation fragments that are plausible and especially revealing for this character because of their biography, relationships, work, values, flaws, pressures, and behavior modes. Derive the line from that context before styling the prose. Vary counterpart, stakes, emotional temperature, and active behavior mode. Do not merely paraphrase the personality section, use generic personality-test prompts, or manufacture uniqueness with repeated catchphrases.
 
 Before accepting a set, run the reference's blind-speaker, subtext, interchangeability, read-aloud, anti-LLM, and final performance tests. Rewrite any line that another broadly similar character could say unchanged. Do not finish until the complete set is recognizably this character without relying on names, catchphrases, or action beats.
 
@@ -219,7 +219,7 @@ Preserve existing versions by default. When intentionally adding a checkpoint, d
 - `character_details`: populated standard sections with `_label`, `_instruction`, and `value`.
 - `behavior_modes`: condition/effect rules plus activation and conflict guidance.
 - `custom_attributes`: additional canon.
-- `sample_dialogues`: voice demonstrations.
+- `sample_dialogues`: voice-and-behavior demonstrations for likely character-specific interactions.
 - `visual_reference`: optional visual description.
 
 Preserve underscore-prefixed instruction fields when preparing an LLM configuration. They are valid JSON data, not comments, and explain how adjacent values should influence behavior.
