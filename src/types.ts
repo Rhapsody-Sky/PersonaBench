@@ -41,6 +41,13 @@ export interface CustomAttribute {
   isPublic: boolean;
 }
 
+export interface BehaviorMode {
+  id: string;
+  name: string;
+  condition: string;
+  behavior: string;
+}
+
 export interface AvatarState {
   sourceDataUrl: string | null;
   fileName: string | null;
@@ -51,12 +58,14 @@ export interface AvatarState {
 
 export interface PersonaProject {
   id: string;
+  target: "tomori" | "llm";
   name: string;
   concept: string;
   archetype: string;
   triggerWords: string[];
   sections: Record<SectionKey, CharacterSection>;
   customAttributes: CustomAttribute[];
+  behaviorModes: BehaviorMode[];
   sampleDialogues: SampleDialogue[];
   visualPrompt: string;
   appearanceTags: string[];
@@ -98,4 +107,12 @@ export interface TomoriPresetExport {
   type: "preset";
   exported_at: string;
   data: TomoriPresetData;
+}
+
+export interface LlmPersonaExport {
+  format: "persona-bench-llm-persona";
+  version: 1;
+  exported_at: string;
+  _usage: string;
+  persona: Record<string, unknown>;
 }

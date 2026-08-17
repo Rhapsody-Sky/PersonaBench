@@ -28,8 +28,11 @@ import {
 } from "lucide";
 import "./styles.css";
 import { importProject, listProjects, listVersions, removeProject, removeVersion, saveProject, saveVersion } from "./db";
-import { buildBackup, buildTomoriPng, buildTomoriPreset, downloadBlob, downloadJson, safeFileName, SECTION_LABELS } from "./export";
+import { buildBackup, buildLlmPersona, buildTomoriPng, buildTomoriPreset, downloadBlob, downloadJson, safeFileName, SECTION_LABELS } from "./export";
 import type { BuilderBackup, PersonaProject, PersonaVersion, SectionKey, TomoriPresetExport } from "./types";
+import { WorkspaceSync } from "./workspace-sync";
+
+const logoUrl = new URL("../tomori_companion_logo.svg", import.meta.url).href;
 
 type SectionDescriptor = {
   key: SectionKey;
@@ -142,14 +145,25 @@ const state: {
   versions: [],
   saveTimer: null,
   guided: localStorage.getItem("tomori-persona-creator.guided") !== "false",
-  theme: localStorage.getItem("tomori-persona-creator.theme.v2") === "dark" ? "dark" : "light",
+  theme: localStorage.getItem("tomori-persona-creator.theme.v2") === "light" ? "light" : "dark",
   palette: (["lilya", "aphel", "nerine", "tomori", "zaya"] as Palette[]).includes(localStorage.getItem("tomori-persona-creator.palette") as Palette)
     ? localStorage.getItem("tomori-persona-creator.palette") as Palette
     : "lilya",
 };
 
+const workspaceSync = new WorkspaceSync(
+  async () => buildBackup(state.project, await listVersions(state.project.id)),
+  applyWorkspaceBackup,
+  preserveRemoteWorkspaceBackup,
+  updateWorkspaceSyncUi,
+);
+
 function id(): string {
   return crypto.randomUUID();
+}
+
+function isLlmProject(project = state.project): boolean {
+  return project.target === "llm";
 }
 
 function createBlankProject(name = "Untitled Persona"): PersonaProject {
@@ -159,12 +173,14 @@ function createBlankProject(name = "Untitled Persona"): PersonaProject {
   ) as PersonaProject["sections"];
   return {
     id: id(),
+    target: "tomori",
     name,
     concept: "",
     archetype: "",
     triggerWords: [],
     sections,
     customAttributes: [],
+    behaviorModes: [],
     sampleDialogues: [{ id: id(), input: "", output: "" }],
     visualPrompt: "",
     appearanceTags: [],
@@ -207,7 +223,7 @@ function splitList(value: string): string[] {
 function completion(): { percent: number; completed: Record<string, boolean>; filled: number; total: number } {
   const project = state.project;
   const checks: Record<string, boolean> = {
-    identity: Boolean(project.name.trim() && project.concept.trim() && project.triggerWords.length),
+    identity: Boolean(project.name.trim() && project.concept.trim() && (isLlmProject(project) || project.triggerWords.length)),
     character: ["generalDescription", "personality", "history", "motivations", "fears"].filter(
       (key) => project.sections[key as SectionKey].value.trim(),
     ).length >= 3,
@@ -232,13 +248,14 @@ function avatarStyle(): string {
 
 function renderSectionField(section: SectionDescriptor): string {
   const value = state.project.sections[section.key];
+  const visibility = isLlmProject() ? "" : `<label class="visibility-check" title="Other active personas may see this attribute">
+        <input type="checkbox" data-section-public="${section.key}"${value.isPublic ? " checked" : ""}>
+        <span>Public</span>
+      </label>`;
   return `<div class="builder-field" data-field-shell="${section.key}">
     <div class="field-heading">
       <label for="section-${section.key}">${escapeHtml(section.title)}</label>
-      <label class="visibility-check" title="Other active personas may see this attribute">
-        <input type="checkbox" data-section-public="${section.key}"${value.isPublic ? " checked" : ""}>
-        <span>Public</span>
-      </label>
+      ${visibility}
     </div>
     <p>${escapeHtml(section.prompt)}</p>
     <textarea id="section-${section.key}" data-section="${section.key}" rows="${section.rows ?? 4}" maxlength="5000" placeholder="${escapeHtml(section.example)}">${escapeHtml(value.value)}</textarea>
@@ -268,13 +285,24 @@ function renderDialogue(dialogue: PersonaProject["sampleDialogues"][number], ind
 }
 
 function renderCustomAttribute(attribute: PersonaProject["customAttributes"][number]): string {
+  const visibility = isLlmProject() ? "" : `<label class="visibility-check"><input type="checkbox" data-custom-public${attribute.isPublic ? " checked" : ""}><span>Public</span></label>`;
   return `<article class="custom-attribute" data-custom="${attribute.id}">
     <div class="custom-heading">
       <input data-custom-field="title" value="${escapeHtml(attribute.title)}" maxlength="120" placeholder="Attribute title">
-      <label class="visibility-check"><input type="checkbox" data-custom-public${attribute.isPublic ? " checked" : ""}><span>Public</span></label>
+      ${visibility}
       <button class="icon-button danger-icon" type="button" data-remove-custom="${attribute.id}" aria-label="Remove custom attribute" title="Remove attribute">${icon("trash-2")}</button>
     </div>
-    <textarea data-custom-field="value" rows="4" maxlength="5000" placeholder="What should Tomori know about this part of the character?">${escapeHtml(attribute.value)}</textarea>
+    <textarea data-custom-field="value" rows="4" maxlength="5000" placeholder="${isLlmProject() ? "What should an LLM know about this character?" : "What should Tomori know about this part of the character?"}">${escapeHtml(attribute.value)}</textarea>
+  </article>`;
+}
+
+function renderBehaviorMode(mode: PersonaProject["behaviorModes"][number], index: number): string {
+  return `<article class="behavior-mode" data-mode="${mode.id}">
+    <div class="mode-heading"><span>${String(index + 1).padStart(2, "0")}</span><input data-mode-field="name" value="${escapeHtml(mode.name)}" maxlength="100" placeholder="Mode name, e.g. Money fixation"><button class="icon-button danger-icon" type="button" data-remove-mode="${mode.id}" title="Remove mode" aria-label="Remove mode">${icon("trash-2")}</button></div>
+    <div class="mode-fields">
+      <label><span>When this happens…</span><small>A concrete, observable condition in the scene or conversation.</small><textarea data-mode-field="condition" rows="3" maxlength="2000" placeholder="When ${escapeHtml(state.project.name || "the character")} sees physical money…">${escapeHtml(mode.condition)}</textarea></label>
+      <label><span>Change their behavior like this…</span><small>Describe priorities, reactions, or impulses while the condition is active.</small><textarea data-mode-field="behavior" rows="3" maxlength="3000" placeholder="They lock onto it and will do almost anything to earn it.">${escapeHtml(mode.behavior)}</textarea></label>
+    </div>
   </article>`;
 }
 
@@ -282,11 +310,13 @@ function renderApp(): void {
   document.body.dataset.theme = state.theme;
   document.body.dataset.palette = state.palette;
   const progress = completion();
+  const llmMode = isLlmProject();
+  const sync = workspaceSync.state;
   app.innerHTML = `<div class="app-shell${state.guided ? " guided-mode" : ""}">
     <header class="topbar">
-      <a class="brand" href="#identity" aria-label="Tomori Persona Creator">
-        <img src="./tomori_companion_logo.svg" alt="TomoriBot">
-        <span><strong>Persona Creator</strong><small>local character workshop</small></span>
+      <a class="brand" href="#identity" aria-label="Persona Bench">
+        <img src="${logoUrl}" alt="TomoriBot">
+        <span><strong>Persona Bench</strong><small>local character workshop</small></span>
       </a>
       <div class="project-switcher">
         <label for="project-select">Current persona</label>
@@ -320,23 +350,42 @@ function renderApp(): void {
         ${([
           ["identity", "sparkles", "Identity"],
           ["core-character", "user-round", "Character"],
+          ["behavior-modes", "lightbulb", "Modes"],
           ["voice", "messages-square", "Voice"],
           ["appearance", "image", "Appearance"],
           ["review", "circle-check", "Review"],
         ] as const).map(([target, iconName, label]) => `<a href="#${target}" data-guide-link="${target}" class="${progress.completed[target === "core-character" ? "character" : target] ? "is-complete" : ""}">${icon(iconName)}<span>${label}</span><i data-lucide="check"></i></a>`).join("")}
       </nav>
       <label class="guide-toggle"><span><strong>Guided mode</strong><small>Show prompts and examples</small></span><input id="guided-toggle" type="checkbox"${state.guided ? " checked" : ""}><i></i></label>
-      <div class="privacy-note">${icon("shield-check")}<p><strong>Private by design</strong><span>Everything stays in this browser until you export it.</span></p></div>
+      <div class="privacy-note">${icon("shield-check")}<p><strong>Private by design</strong><span>Everything stays in this browser unless you export or link a workspace file.</span></p></div>
+      <div class="workspace-sync" id="workspace-sync" data-status="${sync.status}">
+        <div class="workspace-sync-heading"><i></i><p><strong>Linked workspace file</strong><span id="workspace-sync-file">${escapeHtml(sync.fileName || "No file linked")}</span></p></div>
+        <small id="workspace-sync-message">${escapeHtml(sync.message)}</small>
+        <div class="workspace-sync-actions">
+          <button class="button secondary-button" id="workspace-link" type="button"${sync.status === "unsupported" ? " disabled" : ""}>${sync.status === "unsupported" ? "Unavailable" : "Link file"}</button>
+          <button class="button quiet-button" id="workspace-reconnect" type="button"${sync.status === "permission" ? "" : " hidden"}>Reconnect</button>
+          <button class="icon-button" id="workspace-check" type="button" title="Check for agent changes" aria-label="Check for agent changes"${sync.fileName && sync.status !== "permission" ? "" : " hidden"}>${icon("history")}</button>
+          <button class="icon-button danger-icon" id="workspace-disconnect" type="button" title="Disconnect workspace file" aria-label="Disconnect workspace file"${sync.fileName ? "" : " hidden"}>${icon("x")}</button>
+        </div>
+      </div>
     </aside>
 
     <main class="builder-main">
       <section class="builder-hero reveal-section" id="identity">
-        <div class="hero-copy"><p class="eyebrow">Start with the signal</p><h1 id="hero-name">${escapeHtml(state.project.name)}</h1><p>A strong persona is more than a list of traits. Give them pressure, contradiction, and a voice that makes choices.</p></div>
+        <div class="hero-copy"><p class="eyebrow">Start with the purpose</p><h1 id="hero-name">${escapeHtml(state.project.name)}</h1><p>Persona Bench turns a character idea into structured guidance you can use in TomoriBot or any LLM.</p></div>
+        <div class="target-picker" role="group" aria-label="Persona target">
+          <button class="target-choice${llmMode ? "" : " is-active"}" type="button" data-target="tomori"><strong>For TomoriBot</strong><span>Tomori presets, trigger words, public attributes, and PNG export.</span></button>
+          <button class="target-choice${llmMode ? " is-active" : ""}" type="button" data-target="llm"><strong>For any LLM</strong><span>A portable JSON persona with built-in instructions for each field.</span></button>
+        </div>
+        <div class="agent-skill-callout">
+          <div>${icon("braces")}<p><strong>Build together with an LLM or agent</strong><span>Download the skill and link a workspace file for live local collaboration—or exchange Builder backups manually.</span></p></div>
+          <a class="button secondary-button" href="/Skills/persona-bench-collaborator/SKILL.md" download="persona-bench-SKILL.md">Download SKILL.md</a>
+        </div>
         <div class="identity-grid">
-          <label class="wide-field"><span>Character name</span><small>The display name and primary Tomori trigger.</small><input data-basic="name" value="${escapeHtml(state.project.name)}" maxlength="100" placeholder="Who are we creating?"></label>
+          <label class="wide-field"><span>Character name</span><small>${llmMode ? "The name the LLM should use for this persona." : "The display name and primary Tomori trigger."}</small><input data-basic="name" value="${escapeHtml(state.project.name)}" maxlength="100" placeholder="Who are we creating?"></label>
           <label><span>Core concept</span><small>One sentence that captures the hook.</small><textarea data-basic="concept" rows="3" maxlength="500" placeholder="A disgraced oracle who can predict everything except her own choices.">${escapeHtml(state.project.concept)}</textarea></label>
           <label><span>Role or archetype</span><small>A useful starting point, not a cage.</small><input data-basic="archetype" value="${escapeHtml(state.project.archetype)}" maxlength="160" placeholder="Reluctant mentor, charming rival..."></label>
-          <label><span>Trigger words</span><small>Comma-separated names or phrases that summon this persona.</small><input data-basic="triggerWords" value="${escapeHtml(state.project.triggerWords.join(", "))}" maxlength="2000" placeholder="name, nickname, alias"></label>
+          ${llmMode ? "" : '<label><span>Trigger words</span><small>Comma-separated names or phrases that summon this persona.</small><input data-basic="triggerWords" value="' + escapeHtml(state.project.triggerWords.join(", ")) + '" maxlength="2000" placeholder="name, nickname, alias"></label>'}
         </div>
       </section>
 
@@ -345,6 +394,11 @@ function renderApp(): void {
       <section class="builder-panel reveal-section" id="custom-attributes">
         <header class="panel-heading"><div><p class="eyebrow">Your structure</p><h2>Custom attributes</h2><p>Add anything this character needs that the guide did not ask.</p></div><button type="button" class="button secondary-button" id="add-custom">${icon("plus", "Add attribute")}</button></header>
         <div id="custom-list" class="custom-list">${state.project.customAttributes.map(renderCustomAttribute).join("") || '<div class="empty-line">No custom attributes yet.</div>'}</div>
+      </section>
+
+      <section class="builder-panel reveal-section" id="behavior-modes">
+        <header class="panel-heading"><div><p class="eyebrow">Conditional behavior</p><h2>Give them modes and triggers.</h2><p>Define situations that temporarily shift the character's priorities or reactions without replacing their core identity.</p></div><button type="button" class="button secondary-button" id="add-mode">${icon("plus", "Add mode")}</button></header>
+        <div id="mode-list" class="mode-list">${(state.project.behaviorModes ?? []).map(renderBehaviorMode).join("") || '<div class="empty-line">No conditional behavior modes yet.</div>'}</div>
       </section>
 
       <section class="builder-panel reveal-section" id="voice">
@@ -371,13 +425,13 @@ function renderApp(): void {
           </div>
           <div class="appearance-fields">
             <label><span>Visual character prompt</span><small>Stable identity, body, face, hair, clothing, and distinctive visual details.</small><textarea data-basic="visualPrompt" rows="10" maxlength="5000" placeholder="1girl, short silver hair, mechanical horns, worn courier jacket...">${escapeHtml(state.project.visualPrompt)}</textarea></label>
-            <label><span>Physical appearance tags</span><small>Comma-separated imageboard-style traits reused by Tomori image generation.</small><textarea data-basic="appearanceTags" rows="4" maxlength="5000" placeholder="silver hair, green eyes, freckles, mechanical horns">${escapeHtml(state.project.appearanceTags.join(", "))}</textarea></label>
+            ${llmMode ? "" : '<label><span>Physical appearance tags</span><small>Comma-separated imageboard-style traits reused by Tomori image generation.</small><textarea data-basic="appearanceTags" rows="4" maxlength="5000" placeholder="silver hair, green eyes, freckles, mechanical horns">' + escapeHtml(state.project.appearanceTags.join(", ")) + "</textarea></label>"}
           </div>
         </div>
       </section>
 
       <section class="builder-panel review-panel reveal-section" id="review">
-        <header class="panel-heading"><div><p class="eyebrow">Final pass</p><h2>Review the character signal.</h2><p>Tomori will receive the populated sections below as separate attributes.</p></div><button class="button primary-button" type="button" data-open-export>${icon("download", "Export persona")}</button></header>
+        <header class="panel-heading"><div><p class="eyebrow">Final pass</p><h2>Review the character signal.</h2><p>${llmMode ? "Your JSON will include the populated sections plus guidance for how an LLM should use them." : "Tomori will receive the populated sections below as separate attributes."}</p></div><button class="button primary-button" type="button" data-open-export>${icon("download", "Export persona")}</button></header>
         <div class="review-summary" id="review-summary"></div>
       </section>
     </main>
@@ -399,18 +453,113 @@ function renderApp(): void {
   </div></dialog>
 
   <dialog id="export-dialog" class="modal"><div class="modal-surface export-modal">
-    <header><div><p class="eyebrow">Ready to travel</p><h2>Export persona</h2><p>Choose a Tomori-ready file or a complete builder backup.</p></div><button class="icon-button" data-close-dialog="export-dialog" aria-label="Close">${icon("x")}</button></header>
+    <header><div><p class="eyebrow">Ready to travel</p><h2>Export persona</h2><p>${llmMode ? "Download portable JSON for your LLM, or save a complete builder backup." : "Choose a Tomori-ready file or a complete builder backup."}</p></div><button class="icon-button" data-close-dialog="export-dialog" aria-label="Close">${icon("x")}</button></header>
     <div class="export-readiness" id="export-readiness"></div>
     <div class="export-options">
-      <button class="export-choice" data-export="png" type="button"><i data-lucide="image-down"></i><span><strong>Tomori PNG</strong><small>Avatar and import data in one shareable file.</small></span><i data-lucide="arrow-right"></i></button>
-      <button class="export-choice" data-export="json" type="button"><i data-lucide="braces"></i><span><strong>Tomori JSON</strong><small>Importable native preset without the avatar image.</small></span><i data-lucide="arrow-right"></i></button>
+      ${llmMode ? '<button class="export-choice" data-export="llm-json" type="button"><i data-lucide="braces"></i><span><strong>LLM Persona JSON</strong><small>Portable persona data with field-by-field prompt guidance.</small></span><i data-lucide="arrow-right"></i></button>' : '<button class="export-choice" data-export="png" type="button"><i data-lucide="image-down"></i><span><strong>Tomori PNG</strong><small>Avatar and import data in one shareable file.</small></span><i data-lucide="arrow-right"></i></button><button class="export-choice" data-export="json" type="button"><i data-lucide="braces"></i><span><strong>Tomori JSON</strong><small>Importable native preset without the avatar image.</small></span><i data-lucide="arrow-right"></i></button>'}
       <button class="export-choice" data-export="backup" type="button"><i data-lucide="archive"></i><span><strong>Builder backup</strong><small>Project, avatar, tutorial fields, and version history.</small></span><i data-lucide="arrow-right"></i></button>
     </div>
     <footer><label class="button quiet-button import-button">${icon("upload", "Import project")}<input id="project-import" type="file" accept="application/json,.json" hidden></label><button class="button quiet-button" data-close-dialog="export-dialog" type="button">Close</button></footer>
+  </div></dialog>
+
+  <dialog id="sync-conflict-dialog" class="modal"><div class="modal-surface sync-conflict-modal">
+    <header><div><p class="eyebrow">Sync conflict</p><h2>Browser and agent both made changes.</h2><p>Choose which complete project should become the shared version. Persona Bench saves the other side as a named local version before resolving the conflict.</p></div></header>
+    <div class="sync-conflict-versions">
+      <article><span>Browser version</span><strong id="sync-local-revision">Revision —</strong><small id="sync-local-time">—</small></article>
+      <article><span>Agent file</span><strong id="sync-remote-revision">Revision —</strong><small id="sync-remote-time">—</small></article>
+    </div>
+    <footer><button class="button quiet-button" id="sync-use-agent" type="button">Load agent version</button><button class="button primary-button" id="sync-keep-browser" type="button">Keep browser version</button></footer>
   </div></dialog>`;
   updateDerivedUi();
+  updateWorkspaceSyncUi();
   bindIntersectionObserver();
   enhanceIcons();
+}
+
+async function applyWorkspaceBackup(backup: BuilderBackup): Promise<void> {
+  const projectId = state.project.id;
+  const checkpoint: PersonaVersion = {
+    id: id(),
+    projectId,
+    label: "Before loading agent changes",
+    createdAt: new Date().toISOString(),
+    project: structuredClone(state.project),
+  };
+  const project = structuredClone(backup.project);
+  project.id = projectId;
+  project.target ??= "tomori";
+  project.behaviorModes ??= [];
+  const versions = [checkpoint, ...backup.versions.map((version) => ({
+    ...structuredClone(version),
+    projectId,
+    project: {
+      ...structuredClone(version.project),
+      id: projectId,
+      target: version.project.target ?? "tomori",
+      behaviorModes: version.project.behaviorModes ?? [],
+    },
+  }))];
+  await importProject(project, versions);
+  state.project = project;
+  state.versions = versions;
+  const index = state.projects.findIndex((item) => item.id === projectId);
+  if (index >= 0) state.projects[index] = structuredClone(project);
+  renderApp();
+  toast("Agent changes loaded from the linked file");
+}
+
+async function preserveRemoteWorkspaceBackup(backup: BuilderBackup): Promise<void> {
+  const projectId = state.project.id;
+  const remote = structuredClone(backup.project);
+  remote.id = projectId;
+  remote.target ??= "tomori";
+  remote.behaviorModes ??= [];
+  const version: PersonaVersion = {
+    id: id(),
+    projectId,
+    label: "Agent file before conflict resolution",
+    createdAt: new Date().toISOString(),
+    project: remote,
+  };
+  await saveVersion(version);
+  state.versions.unshift(version);
+}
+
+function updateWorkspaceSyncUi(): void {
+  const sync = workspaceSync.state;
+  const card = document.querySelector<HTMLElement>("#workspace-sync");
+  if (card) card.dataset.status = sync.status;
+  const file = document.querySelector<HTMLElement>("#workspace-sync-file");
+  if (file) file.textContent = sync.fileName || "No file linked";
+  const message = document.querySelector<HTMLElement>("#workspace-sync-message");
+  if (message) message.textContent = sync.message;
+  const link = document.querySelector<HTMLButtonElement>("#workspace-link");
+  if (link) {
+    link.hidden = Boolean(sync.fileName) && sync.status !== "unsupported";
+    link.disabled = sync.status === "unsupported";
+    link.textContent = sync.status === "unsupported" ? "Unavailable" : "Link file";
+  }
+  const reconnect = document.querySelector<HTMLButtonElement>("#workspace-reconnect");
+  if (reconnect) reconnect.hidden = sync.status !== "permission";
+  const check = document.querySelector<HTMLButtonElement>("#workspace-check");
+  if (check) check.hidden = !sync.fileName || sync.status === "permission";
+  const disconnect = document.querySelector<HTMLButtonElement>("#workspace-disconnect");
+  if (disconnect) disconnect.hidden = !sync.fileName;
+
+  const dialog = document.querySelector<HTMLDialogElement>("#sync-conflict-dialog");
+  if (sync.status === "conflict" && sync.conflict && dialog) {
+    const localRevision = document.querySelector<HTMLElement>("#sync-local-revision");
+    const localTime = document.querySelector<HTMLElement>("#sync-local-time");
+    const remoteRevision = document.querySelector<HTMLElement>("#sync-remote-revision");
+    const remoteTime = document.querySelector<HTMLElement>("#sync-remote-time");
+    if (localRevision) localRevision.textContent = `Revision ${sync.conflict.localRevision}`;
+    if (localTime) localTime.textContent = new Date(sync.conflict.localUpdatedAt).toLocaleString();
+    if (remoteRevision) remoteRevision.textContent = `Revision ${sync.conflict.remoteRevision}`;
+    if (remoteTime) remoteTime.textContent = new Date(sync.conflict.remoteUpdatedAt).toLocaleString();
+    if (!dialog.open) dialog.showModal();
+  } else if (dialog?.open) {
+    dialog.close();
+  }
 }
 
 function suggestion(): string {
@@ -427,6 +576,8 @@ function suggestion(): string {
 function updateDerivedUi(): void {
   const project = state.project;
   const preset = buildTomoriPreset(project);
+  const llmMode = isLlmProject();
+  const llmPersona = buildLlmPersona(project);
   const progress = completion();
   document.querySelector(".progress-ring")?.setAttribute("style", `--progress:${progress.percent}`);
   const progressNumber = document.querySelector<HTMLElement>(".progress-ring strong");
@@ -442,7 +593,7 @@ function updateDerivedUi(): void {
   const concept = document.querySelector<HTMLElement>("#pulse-concept");
   if (concept) concept.textContent = project.concept || "Your concept will appear here as the character takes shape.";
   const attr = document.querySelector<HTMLElement>("#pulse-attributes");
-  if (attr) attr.textContent = String(preset.data.attribute_list.length);
+  if (attr) attr.textContent = String(llmMode ? Object.keys(llmPersona.persona.character_details as object).length + (llmPersona.persona.custom_attributes as unknown[]).length + ((llmPersona.persona.behavior_modes as { modes: unknown[] }).modes.length) : preset.data.attribute_list.length);
   const dialogue = document.querySelector<HTMLElement>("#pulse-dialogues");
   if (dialogue) dialogue.textContent = String(preset.data.sample_dialogues_in.length);
   const tip = document.querySelector<HTMLElement>("#pulse-tip");
@@ -450,8 +601,14 @@ function updateDerivedUi(): void {
   const review = document.querySelector<HTMLElement>("#review-summary");
   if (review) {
     const attributes = preset.data.attribute_list;
-    review.innerHTML = `<div class="review-score"><strong>${progress.percent}%</strong><span>builder readiness</span><small>${attributes.length} attributes / ${preset.data.sample_dialogues_in.length} dialogues</small></div>
-      <div class="review-attributes">${attributes.length ? attributes.map((text, index) => `<div><span>${preset.data.attribute_public_flags[index] ? "Public" : "Private"}</span><p>${escapeHtml(text)}</p></div>`).join("") : '<div class="empty-line">Complete character sections to preview exported attributes.</div>'}</div>`;
+    const llmAttributes = Object.entries(llmPersona.persona.character_details as Record<string, { _label: string; value: string }>);
+    const llmModes = (llmPersona.persona.behavior_modes as { modes: Array<{ name: string; when: string; behavioral_shift: string }> }).modes;
+    const count = llmMode ? llmAttributes.length + (llmPersona.persona.custom_attributes as unknown[]).length + llmModes.length : attributes.length;
+    const cards = llmMode
+      ? llmAttributes.map(([, item]) => `<div><span>LLM guidance included</span><p>${escapeHtml(`${item._label}:\n${item.value}`)}</p></div>`).join("") + llmModes.map((mode) => `<div><span>Conditional mode</span><p>${escapeHtml(`${mode.name}\nWhen: ${mode.when}\nThen: ${mode.behavioral_shift}`)}</p></div>`).join("")
+      : attributes.map((text, index) => `<div><span>${preset.data.attribute_public_flags[index] ? "Public" : "Private"}</span><p>${escapeHtml(text)}</p></div>`).join("");
+    review.innerHTML = `<div class="review-score"><strong>${progress.percent}%</strong><span>builder readiness</span><small>${count} attributes / ${preset.data.sample_dialogues_in.length} dialogues</small></div>
+      <div class="review-attributes">${cards || '<div class="empty-line">Complete character sections to preview exported attributes.</div>'}</div>`;
   }
   const readiness = document.querySelector<HTMLElement>("#export-readiness");
   if (readiness) {
@@ -459,15 +616,19 @@ function updateDerivedUi(): void {
       !project.name.trim() ? "Add a character name." : "",
       attributesCount(project) < 3 ? "Add at least three meaningful character attributes." : "",
       !preset.data.sample_dialogues_in.length ? "A sample dialogue will make the voice more reliable." : "",
-      !project.avatar.sourceDataUrl ? "No avatar uploaded. The PNG will use a generated placeholder." : "",
+      !llmMode && !project.avatar.sourceDataUrl ? "No avatar uploaded. The PNG will use a generated placeholder." : "",
     ].filter(Boolean);
     readiness.innerHTML = warnings.length
       ? `<i data-lucide="circle-alert"></i><div><strong>${warnings.length} review note${warnings.length === 1 ? "" : "s"}</strong>${warnings.map((warning) => `<span>${escapeHtml(warning)}</span>`).join("")}</div>`
-      : `<i data-lucide="circle-check"></i><div><strong>Ready for Tomori</strong><span>The native preset has a name, attributes, dialogue, and avatar.</span></div>`;
+      : `<i data-lucide="circle-check"></i><div><strong>${llmMode ? "Ready for your LLM" : "Ready for Tomori"}</strong><span>${llmMode ? "The JSON includes persona data and short instructions for each field." : "The native preset has a name, attributes, dialogue, and avatar."}</span></div>`;
   }
 }
 
 function attributesCount(project: PersonaProject): number {
+  if (isLlmProject(project)) {
+    const persona = buildLlmPersona(project).persona;
+    return Object.keys(persona.character_details as object).length + (persona.custom_attributes as unknown[]).length + ((persona.behavior_modes as { modes: unknown[] }).modes.length);
+  }
   return buildTomoriPreset(project).data.attribute_list.length;
 }
 
@@ -492,6 +653,7 @@ function markDirty(): void {
       const text = saveState.querySelector("span");
       if (text) text.textContent = "Saved locally";
     }
+    workspaceSync.syncLocalChanges();
   }, 500);
 }
 
@@ -518,6 +680,12 @@ function setValue(target: HTMLInputElement | HTMLTextAreaElement): void {
     const custom = state.project.customAttributes.find((item) => item.id === row?.dataset.custom);
     if (custom) custom[customField] = target.value;
   }
+  const modeField = target.dataset.modeField as "name" | "condition" | "behavior" | undefined;
+  if (modeField) {
+    const row = target.closest<HTMLElement>("[data-mode]");
+    const mode = (state.project.behaviorModes ?? []).find((item) => item.id === row?.dataset.mode);
+    if (mode) mode[modeField] = target.value;
+  }
   markDirty();
   updateDerivedUi();
   enhanceIcons();
@@ -539,11 +707,16 @@ async function switchProject(projectId: string): Promise<void> {
     clearTimeout(state.saveTimer);
     state.saveTimer = null;
     await saveProject(state.project);
+    if (!await workspaceSync.flushLocalChanges()) {
+      renderApp();
+      return;
+    }
   }
   state.project = structuredClone(project);
   state.versions = await listVersions(project.id);
   localStorage.setItem("tomori-persona-creator.current", project.id);
   renderApp();
+  await workspaceSync.activate(project.id);
   window.scrollTo({ top: 0 });
 }
 
@@ -555,6 +728,7 @@ async function addProject(): Promise<void> {
   state.versions = [];
   localStorage.setItem("tomori-persona-creator.current", project.id);
   renderApp();
+  await workspaceSync.activate(project.id);
   document.querySelector<HTMLInputElement>('[data-basic="name"]')?.select();
   toast("New local persona created");
 }
@@ -569,12 +743,14 @@ async function duplicateCurrent(): Promise<void> {
   copy.revision = 1;
   copy.sampleDialogues = copy.sampleDialogues.map((dialogue) => ({ ...dialogue, id: id() }));
   copy.customAttributes = copy.customAttributes.map((attribute) => ({ ...attribute, id: id() }));
+  copy.behaviorModes = (copy.behaviorModes ?? []).map((mode) => ({ ...mode, id: id() }));
   await saveProject(copy);
   state.projects.unshift(copy);
   state.project = copy;
   state.versions = [];
   localStorage.setItem("tomori-persona-creator.current", copy.id);
   renderApp();
+  await workspaceSync.activate(copy.id);
   toast("Persona duplicated");
 }
 
@@ -637,7 +813,7 @@ function bindIntersectionObserver(): void {
 app.addEventListener("input", (event) => {
   const target = event.target;
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-    if (target.matches("[data-basic], [data-section], [data-dialogue-field], [data-custom-field]")) setValue(target);
+    if (target.matches("[data-basic], [data-section], [data-dialogue-field], [data-custom-field], [data-mode-field]")) setValue(target);
     if (target instanceof HTMLInputElement) {
       const sectionPublic = target.dataset.sectionPublic as SectionKey | undefined;
       if (sectionPublic) {
@@ -688,6 +864,8 @@ app.addEventListener("change", async (event) => {
       if (isBuilderBackup(parsed)) {
         project = structuredClone(parsed.project);
         project.id = id();
+        project.target ??= "tomori";
+        project.behaviorModes ??= [];
         project.name = `${project.name} (Imported)`;
         versions = parsed.versions.map((version) => ({ ...structuredClone(version), id: id(), projectId: project.id, project: { ...structuredClone(version.project), id: project.id } }));
       } else if (isTomoriPreset(parsed)) {
@@ -725,6 +903,27 @@ app.addEventListener("click", async (event) => {
     localStorage.setItem("tomori-persona-creator.theme.v2", state.theme);
     renderApp();
   }
+  if (button.id === "workspace-link") {
+    await workspaceSync.connect(`persona-bench-${safeFileName(state.project.name)}.json`);
+  }
+  if (button.id === "workspace-reconnect") await workspaceSync.reconnect();
+  if (button.id === "workspace-check") {
+    if (workspaceSync.state.status === "conflict") updateWorkspaceSyncUi();
+    else await workspaceSync.checkNow();
+  }
+  if (button.id === "workspace-disconnect") {
+    await workspaceSync.disconnect();
+    toast("Workspace file disconnected; browser storage remains intact");
+  }
+  if (button.id === "sync-use-agent") await workspaceSync.useAgentVersion();
+  if (button.id === "sync-keep-browser") await workspaceSync.keepBrowserVersion();
+  const targetMode = button.dataset.target as PersonaProject["target"] | undefined;
+  if (targetMode) {
+    state.project.target = targetMode;
+    markDirty();
+    renderApp();
+    toast(targetMode === "llm" ? "General LLM mode enabled" : "TomoriBot mode enabled");
+  }
   if (button.id === "avatar-choose") document.querySelector<HTMLInputElement>("#avatar-file")?.click();
   if (button.id === "remove-avatar") {
     state.project.avatar = { sourceDataUrl: null, fileName: null, zoom: 1, x: 0, y: 0 };
@@ -747,6 +946,21 @@ app.addEventListener("click", async (event) => {
     renderApp();
     document.getElementById("custom-attributes")?.scrollIntoView();
     document.querySelector<HTMLInputElement>("[data-custom]:last-child [data-custom-field=title]")?.focus();
+  }
+  if (button.id === "add-mode") {
+    state.project.behaviorModes ??= [];
+    state.project.behaviorModes.push({ id: id(), name: "", condition: "", behavior: "" });
+    markDirty();
+    renderApp();
+    document.getElementById("behavior-modes")?.scrollIntoView();
+    document.querySelector<HTMLInputElement>("[data-mode]:last-child [data-mode-field=name]")?.focus();
+  }
+  const removeMode = button.dataset.removeMode;
+  if (removeMode) {
+    state.project.behaviorModes = (state.project.behaviorModes ?? []).filter((item) => item.id !== removeMode);
+    markDirty();
+    renderApp();
+    document.getElementById("behavior-modes")?.scrollIntoView();
   }
   const removeCustom = button.dataset.removeCustom;
   if (removeCustom) {
@@ -796,11 +1010,13 @@ app.addEventListener("click", async (event) => {
     const version = state.versions.find((item) => item.id === restoreId);
     if (version) {
       const restored = structuredClone(version.project);
+      restored.behaviorModes ??= [];
       restored.id = state.project.id;
       restored.updatedAt = new Date().toISOString();
       restored.revision = state.project.revision + 1;
       state.project = restored;
       await saveProject(restored);
+      workspaceSync.syncLocalChanges();
       const index = state.projects.findIndex((item) => item.id === restored.id);
       if (index >= 0) state.projects[index] = structuredClone(restored);
       document.querySelector<HTMLDialogElement>("#versions-dialog")?.close();
@@ -812,12 +1028,14 @@ app.addEventListener("click", async (event) => {
   if (deleteVersionId) {
     await removeVersion(deleteVersionId);
     state.versions = state.versions.filter((item) => item.id !== deleteVersionId);
+    workspaceSync.syncLocalChanges();
     renderVersions();
     toast("Version deleted");
   }
   if (button.id === "delete-project") {
     if (state.projects.length <= 1) return toast("Create another persona before deleting this one.", "error");
     if (!confirm(`Delete “${state.project.name}” and all of its local versions?`)) return;
+    await workspaceSync.disconnect();
     await removeProject(state.project.id);
     state.projects = state.projects.filter((item) => item.id !== state.project.id);
     document.querySelector<HTMLDialogElement>("#versions-dialog")?.close();
@@ -829,9 +1047,10 @@ app.addEventListener("click", async (event) => {
     const filename = safeFileName(state.project.name);
     try {
       if (exportKind === "json") downloadJson(`tomori-preset-${filename}.json`, buildTomoriPreset(state.project));
+      if (exportKind === "llm-json") downloadJson(`llm-persona-${filename}.json`, buildLlmPersona(state.project));
       if (exportKind === "backup") downloadJson(`persona-builder-${filename}.json`, buildBackup(state.project, await listVersions(state.project.id)));
       if (exportKind === "png") downloadBlob(`tomori-preset-${filename}.png`, await buildTomoriPng(state.project));
-      toast(`${exportKind === "backup" ? "Builder backup" : `Tomori ${exportKind.toUpperCase()}`} exported`);
+      toast(`${exportKind === "backup" ? "Builder backup" : exportKind === "llm-json" ? "LLM persona JSON" : `Tomori ${exportKind.toUpperCase()}`} exported`);
     } catch (error) {
       toast(error instanceof Error ? error.message : "Export failed.", "error");
     }
@@ -847,6 +1066,7 @@ app.addEventListener("submit", async (event) => {
   const version: PersonaVersion = { id: id(), projectId: state.project.id, label, createdAt: new Date().toISOString(), project: structuredClone(state.project) };
   await saveVersion(version);
   state.versions.unshift(version);
+  workspaceSync.syncLocalChanges();
   event.target.reset();
   renderVersions();
   toast("Version saved");
@@ -855,6 +1075,10 @@ app.addEventListener("submit", async (event) => {
 async function boot(): Promise<void> {
   document.body.dataset.theme = state.theme;
   const projects = await listProjects();
+  for (const project of projects) {
+    project.target ??= "tomori";
+    project.behaviorModes ??= [];
+  }
   if (!projects.length) {
     const first = createBlankProject();
     await saveProject(first);
@@ -866,8 +1090,9 @@ async function boot(): Promise<void> {
   state.versions = await listVersions(state.project.id);
   localStorage.setItem("tomori-persona-creator.current", state.project.id);
   renderApp();
+  await workspaceSync.activate(state.project.id);
 }
 
 boot().catch((error) => {
-  app.innerHTML = `<main class="fatal-error"><img src="./tomori_companion_logo.svg" alt="TomoriBot"><h1>The local workshop could not start.</h1><p>${escapeHtml(error instanceof Error ? error.message : error)}</p><button onclick="location.reload()">Try again</button></main>`;
+  app.innerHTML = `<main class="fatal-error"><img src="${logoUrl}" alt="TomoriBot"><h1>The local workshop could not start.</h1><p>${escapeHtml(error instanceof Error ? error.message : error)}</p><button onclick="location.reload()">Try again</button></main>`;
 });

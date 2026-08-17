@@ -1,0 +1,4 @@
+interface:
+  display_name: "Persona Bench Collaborator"
+  short_description: "Create, edit, export, and import Persona Bench personas"
+  default_prompt: "Use $persona-bench-collaborator to help me create or revise a Persona Bench project JSON."

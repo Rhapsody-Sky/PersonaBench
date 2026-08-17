@@ -1,9 +1,10 @@
 import type { PersonaProject, PersonaVersion } from "./types";
 
 const DB_NAME = "tomori-persona-creator";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const PROJECT_STORE = "projects";
 const VERSION_STORE = "versions";
+const WORKSPACE_HANDLE_STORE = "workspace-handles";
 
 let databasePromise: Promise<IDBDatabase> | null = null;
 
@@ -21,10 +22,29 @@ function openDatabase(): Promise<IDBDatabase> {
         const versions = database.createObjectStore(VERSION_STORE, { keyPath: "id" });
         versions.createIndex("projectId", "projectId", { unique: false });
       }
+      if (!database.objectStoreNames.contains(WORKSPACE_HANDLE_STORE)) {
+        database.createObjectStore(WORKSPACE_HANDLE_STORE);
+      }
     };
     request.onsuccess = () => resolve(request.result);
   });
   return databasePromise;
+}
+
+export async function getWorkspaceHandle(projectId: string): Promise<FileSystemFileHandle | null> {
+  const database = await openDatabase();
+  const value = await requestResult(database.transaction(WORKSPACE_HANDLE_STORE).objectStore(WORKSPACE_HANDLE_STORE).get(projectId));
+  return (value as FileSystemFileHandle | undefined) ?? null;
+}
+
+export async function saveWorkspaceHandle(projectId: string, handle: FileSystemFileHandle): Promise<void> {
+  const database = await openDatabase();
+  await requestResult(database.transaction(WORKSPACE_HANDLE_STORE, "readwrite").objectStore(WORKSPACE_HANDLE_STORE).put(handle, projectId));
+}
+
+export async function removeWorkspaceHandle(projectId: string): Promise<void> {
+  const database = await openDatabase();
+  await requestResult(database.transaction(WORKSPACE_HANDLE_STORE, "readwrite").objectStore(WORKSPACE_HANDLE_STORE).delete(projectId));
 }
 
 function requestResult<T>(request: IDBRequest<T>): Promise<T> {
