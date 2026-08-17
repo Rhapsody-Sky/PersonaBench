@@ -1,0 +1,26 @@
+{
+  "name": "persona-bench",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A local-first character workshop for building and exporting TomoriBot personas.",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rhapsody-Sky/PersonaBench.git"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "lucide": "^0.468.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  }
+}
+
