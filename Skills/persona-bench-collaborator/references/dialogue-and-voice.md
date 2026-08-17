@@ -236,6 +236,21 @@ Do not merely blacklist fashionable words. Diagnose the deeper failure: neutral 
 
 Do not accept a dialogue set until it passes every test.
 
+### Final performance audit
+
+After the individual tests, read all outputs consecutively as one performance and answer these questions explicitly in private:
+
+1. If names, metadata, catchphrases, and action beats vanished, would this still sound like this character?
+2. Would a reader of a novel or a viewer hearing the line in a film recognize a stable mind behind the words?
+3. Does the voice remain identifiable in an ordinary low-stakes exchange, not only during an extreme emotion or behavior mode?
+4. Can the distinctive choices be traced to the complete persona rather than an arbitrary verbal gimmick?
+5. Does the voice change naturally by relationship and pressure while remaining recognizably the same person?
+6. Do the samples give another writer or model enough evidence to extrapolate the voice to an unseen prompt?
+
+If any answer is no, the work is not finished. Revisit the causal anchors and rhythm specification, then replace the weakest samples. Do not repair weak identity by adding a catchphrase, accent, unusual punctuation, random quirk, or louder mannerism.
+
+Aim for decisive recognizability. Push the character's selections of detail, thought order, conversational tactics, syntax, and emotional defenses far enough that the voice leaves a strong impression. Stop before the signals become repetitive, performative without cause, or reduce the person to a caricature.
+
 ### Character-causality test
 
 Can each notable verbal choice be traced to biography, worldview, desire, relationship, emotion, or an active mode? Remove arbitrary decoration.

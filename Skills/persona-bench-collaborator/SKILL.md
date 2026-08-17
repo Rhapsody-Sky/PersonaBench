@@ -173,7 +173,7 @@ Use paired examples:
 
 Treat each pair as executable evidence of how this particular character perceives, chooses, evades, attacks, comforts, jokes, or changes register. Derive the line from the character's biography, present desire, relationship, and emotional pressure before styling the prose. Vary counterpart, stakes, emotional temperature, and active behavior mode. Do not merely paraphrase the personality section or manufacture uniqueness with repeated catchphrases.
 
-Before accepting a set, run the reference's blind-speaker, subtext, interchangeability, read-aloud, and anti-LLM tests. Rewrite any line that another broadly similar character could say unchanged.
+Before accepting a set, run the reference's blind-speaker, subtext, interchangeability, read-aloud, anti-LLM, and final performance tests. Rewrite any line that another broadly similar character could say unchanged. Do not finish until the complete set is recognizably this character without relying on names, catchphrases, or action beats.
 
 ## Avatar structure
 
