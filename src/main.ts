@@ -32,7 +32,7 @@ import { buildBackup, buildLlmPersona, buildTomoriPng, buildTomoriPreset, downlo
 import type { BuilderBackup, PersonaProject, PersonaVersion, SectionKey, TomoriPresetExport } from "./types";
 import { WorkspaceSync } from "./workspace-sync";
 
-const logoUrl = new URL("../persona_bench_logo.svg", import.meta.url).href;
+const logoUrl = new URL("../tomori_companion_logo.svg", import.meta.url).href;
 
 type SectionDescriptor = {
   key: SectionKey;
@@ -315,7 +315,7 @@ function renderApp(): void {
   app.innerHTML = `<div class="app-shell${state.guided ? " guided-mode" : ""}">
     <header class="topbar">
       <a class="brand" href="#identity" aria-label="Persona Bench">
-        <img src="${logoUrl}" alt="Persona Bench">
+        <img src="${logoUrl}" alt="TomoriBot">
         <span><strong>Persona Bench</strong><small>local character workshop</small></span>
       </a>
       <div class="project-switcher">
@@ -1094,5 +1094,5 @@ async function boot(): Promise<void> {
 }
 
 boot().catch((error) => {
-  app.innerHTML = `<main class="fatal-error"><img src="${logoUrl}" alt="Persona Bench"><h1>The local workshop could not start.</h1><p>${escapeHtml(error instanceof Error ? error.message : error)}</p><button onclick="location.reload()">Try again</button></main>`;
+  app.innerHTML = `<main class="fatal-error"><img src="${logoUrl}" alt="TomoriBot"><h1>The local workshop could not start.</h1><p>${escapeHtml(error instanceof Error ? error.message : error)}</p><button onclick="location.reload()">Try again</button></main>`;
 });
