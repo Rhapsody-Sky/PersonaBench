@@ -147,7 +147,7 @@ export function buildLlmPersona(project: PersonaProject): LlmPersonaExport {
       },
       _custom_attributes_instruction: "Treat custom attributes as additional canon. Interpret each title as the domain in which its value applies.",
       custom_attributes: customAttributes,
-      _sample_dialogues_instruction: "Infer voice, conversational rhythm, and reaction patterns from these examples. Generalize the style to new situations; do not copy example wording by default.",
+      _sample_dialogues_instruction: "Infer voice, conversational rhythm, and reaction patterns from these ordered examples. Generalize the style to new situations; do not copy example wording by default. Treat the final pair as the context-neutral baseline and transition cleanly from it into the real user's new conversation.",
       sample_dialogues: dialogues,
       _visual_reference_instruction: "Use this only for appearance, image generation, or visually relevant narration. Do not let visual details override personality or behavioral canon.",
       visual_reference: project.visualPrompt.trim() || undefined,

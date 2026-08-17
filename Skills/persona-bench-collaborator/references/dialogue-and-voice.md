@@ -175,6 +175,21 @@ These are diagnostic prompts, not a connected scene. The local “want” exists
 
 Keep `input` concise and speakable. It should contain enough relational or situational pressure to make the response meaningful without surrounding narration. Phrase it as something a real interlocutor would say, not “How would you react if...?” or “Tell me about your personality.”
 
+### Step 4a: Order for conversation handoff
+
+Preserve deliberate array order. Persona Bench exports complete dialogue pairs in the order shown; runtimes may inject them as preceding user-character turns. The final example can therefore sit immediately before the real user's first message and exert the strongest local priming.
+
+Order the set from more context-bound to more generally applicable:
+
+1. specialized knowledge, unusual relationship dynamics, or narrow canon;
+2. behavior-mode triggers, conflict, vulnerability, and high emotional pressure;
+3. ordinary recurring interactions and the stable baseline;
+4. **last:** the most context-neutral, low-activation example that still unmistakably demonstrates the character's default voice and reaction style.
+
+“Most general” describes the final example's situation, not bland language. Keep the response character-specific while avoiding a named counterpart, unresolved emergency, active temporary mode, niche topic, strong emotional residue, scene-dependent command, or assumption that the next user message continues that example.
+
+If there is only one example, make it the stable baseline. Prefer several ordered examples so specialized behavior is still demonstrated without contaminating the fresh-conversation handoff.
+
 ### Step 5: Draft from private intent
 
 For each exchange, privately determine:
@@ -317,6 +332,10 @@ Does `neverSays` identify the tempting default voice the model must avoid? Add c
 ### Formula scan
 
 Search the outputs for negation pivots, antitheses, rhetorical triads, fragment stacks, mirrored openings, em dashes, hyphenated interruptions, ellipses, and polished closing morals. Remove them unless the character evidence and situation justify that exact construction.
+
+### Fresh-conversation handoff test
+
+Imagine that a completely new user message arrives immediately after the final character output with no other conversation history. Would the last example incorrectly keep an old scene, relationship, mood, behavior mode, task, or topic active? If yes, move that example earlier and place a broadly applicable baseline pair last. Confirm that the last output is complete enough to release its local situation without becoming generic in voice.
 
 ## Revision method
 

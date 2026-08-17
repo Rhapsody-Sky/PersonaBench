@@ -175,6 +175,8 @@ Treat each pair as executable evidence of how this particular character perceive
 
 Before accepting a set, run the reference's blind-speaker, subtext, interchangeability, read-aloud, anti-LLM, and final performance tests. Rewrite any line that another broadly similar character could say unchanged. Do not finish until the complete set is recognizably this character without relying on names, catchphrases, or action beats.
 
+Preserve intentional dialogue order. Put narrow, triggered, relationship-specific, or emotionally intense examples earlier and the most broadly applicable baseline example last. Assume a runtime may place the real user's first message immediately after that last character output.
+
 ## Avatar structure
 
 Preserve this object during text-only edits:
@@ -219,7 +221,7 @@ Preserve existing versions by default. When intentionally adding a checkpoint, d
 - `character_details`: populated standard sections with `_label`, `_instruction`, and `value`.
 - `behavior_modes`: condition/effect rules plus activation and conflict guidance.
 - `custom_attributes`: additional canon.
-- `sample_dialogues`: voice-and-behavior demonstrations for likely character-specific interactions.
+- `sample_dialogues`: ordered voice-and-behavior demonstrations for likely character-specific interactions; the final pair should hand off cleanly to a fresh conversation.
 - `visual_reference`: optional visual description.
 
 Preserve underscore-prefixed instruction fields when preparing an LLM configuration. They are valid JSON data, not comments, and explain how adjacent values should influence behavior.

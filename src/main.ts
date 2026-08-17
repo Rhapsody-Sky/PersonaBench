@@ -404,7 +404,7 @@ function renderApp(): void {
       <section class="builder-panel reveal-section" id="voice">
         <header class="panel-heading"><div><p class="eyebrow">Voice laboratory</p><h2>Make them sound like themselves.</h2><p>Describe the pattern, then prove it through examples. Sample dialogues are often more useful than another paragraph of adjectives.</p></div><span class="section-count">${state.project.sampleDialogues.filter((item) => item.input.trim() && item.output.trim()).length} examples</span></header>
         <div class="field-stack voice-fields">${voiceSections.map(renderSectionField).join("")}</div>
-        <div class="subsection-heading"><div><p class="eyebrow">Show, do not tell</p><h3>Sample dialogues</h3></div><button class="button secondary-button" id="add-dialogue" type="button">${icon("plus", "Add example")}</button></div>
+        <div class="subsection-heading"><div><p class="eyebrow">Show, do not tell</p><h3>Sample dialogues</h3><p>Order matters: place narrow or triggered examples first and a characterful, context-neutral baseline last so it hands off cleanly to a new conversation.</p></div><button class="button secondary-button" id="add-dialogue" type="button">${icon("plus", "Add example")}</button></div>
         <div id="dialogue-list" class="dialogue-list">${state.project.sampleDialogues.map(renderDialogue).join("")}</div>
       </section>
 
