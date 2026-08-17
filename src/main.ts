@@ -378,8 +378,8 @@ function renderApp(): void {
           <button class="target-choice${llmMode ? " is-active" : ""}" type="button" data-target="llm"><strong>For any LLM</strong><span>A portable JSON persona with built-in instructions for each field.</span></button>
         </div>
         <div class="agent-skill-callout">
-          <div>${icon("braces")}<p><strong>Build together with an LLM or agent</strong><span>Download the skill and link a workspace file for live local collaboration—or exchange Builder backups manually.</span></p></div>
-          <a class="button secondary-button" href="/Skills/persona-bench-collaborator/SKILL.md" download="persona-bench-SKILL.md">Download SKILL.md</a>
+          <div>${icon("braces")}<p><strong>Build together with an LLM or agent</strong><span>Download the complete skill package and link a workspace file for live local collaboration—or exchange Builder backups manually.</span></p></div>
+          <a class="button secondary-button" href="/persona-bench-collaborator-skill.zip" download="persona-bench-collaborator-skill.zip">Download skill (.zip)</a>
         </div>
         <div class="identity-grid">
           <label class="wide-field"><span>Character name</span><small>${llmMode ? "The name the LLM should use for this persona." : "The display name and primary Tomori trigger."}</small><input data-basic="name" value="${escapeHtml(state.project.name)}" maxlength="100" placeholder="Who are we creating?"></label>

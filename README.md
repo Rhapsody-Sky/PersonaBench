@@ -49,7 +49,7 @@ The repository includes an agent-readable skill at:
 
 It explains the project JSON structure, the purpose of every section, safe editing rules, behavior modes, and the export/import workflow. Give an LLM or local coding agent access to that skill together with the linked persona JSON so it can collaborate without guessing the schema.
 
-The production build automatically copies the skill into `dist/Skills/persona-bench-collaborator/`, where it can also be served from the website.
+The production build automatically copies the skill into `dist/Skills/persona-bench-collaborator/` and creates `dist/persona-bench-collaborator-skill.zip`. The website download uses the ZIP so `SKILL.md`, agent metadata, and all referenced guidance remain together.
 
 ## Export formats
 
