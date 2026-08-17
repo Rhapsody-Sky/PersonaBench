@@ -2022,7 +2022,8 @@ select:focus {
 @media (max-width: 720px) {
   .brand span,
   .top-actions #duplicate-project,
-  .top-actions #versions-button {
+  .top-actions #versions-button,
+  .top-actions #delete-project-top {
     display: none;
   }
 

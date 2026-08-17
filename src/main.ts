@@ -327,6 +327,7 @@ function renderApp(): void {
         <span class="save-state" id="save-state"><i></i><span>Saved locally</span></span>
         <button class="button quiet-button" id="duplicate-project" type="button">${icon("copy", "Duplicate")}</button>
         <button class="button quiet-button" id="versions-button" type="button">${icon("history", "Versions")}</button>
+        <button class="button quiet-button danger-icon" id="delete-project-top" type="button" title="Delete persona">${icon("trash-2", "Delete")}</button>
         <button class="button primary-button" id="export-button" type="button">${icon("download", "Export")}</button>
         <div class="palette-picker" aria-label="Color palette">
           ${(["lilya", "aphel", "nerine", "tomori", "zaya"] as Palette[]).map((palette) => `<button class="palette-swatch palette-${palette}${state.palette === palette ? " is-active" : ""}" type="button" data-palette="${palette}" title="${palette.charAt(0).toUpperCase() + palette.slice(1)} palette" aria-label="Use ${palette} palette"></button>`).join("")}
@@ -343,6 +344,7 @@ function renderApp(): void {
           <button class="icon-button" type="button" data-project-action="new" title="New persona" aria-label="New persona">${icon("plus")}</button>
           <button class="icon-button" type="button" data-project-action="duplicate" title="Duplicate persona" aria-label="Duplicate persona">${icon("copy")}</button>
           <button class="icon-button" type="button" data-project-action="versions" title="Versions" aria-label="Versions">${icon("history")}</button>
+          <button class="icon-button danger-icon" type="button" data-project-action="delete" title="Delete persona" aria-label="Delete persona">${icon("trash-2")}</button>
         </div>
       </div>
       <div class="progress-ring" style="--progress:${progress.percent}"><strong>${progress.percent}%</strong><span>ready</span></div>
@@ -449,7 +451,7 @@ function renderApp(): void {
     <header><div><p class="eyebrow">Local history</p><h2>Versions</h2><p>Create checkpoints before making a major change.</p></div><button class="icon-button" data-close-dialog="versions-dialog" aria-label="Close">${icon("x")}</button></header>
     <form id="version-form" class="version-create"><input name="label" maxlength="80" placeholder="Version label, e.g. First complete draft" required><button class="button primary-button" type="submit">${icon("bookmark-plus", "Save version")}</button></form>
     <div id="version-list" class="version-list"></div>
-    <footer><button class="button danger-button" id="delete-project" type="button">${icon("trash-2", "Delete persona")}</button><button class="button quiet-button" data-close-dialog="versions-dialog" type="button">Close</button></footer>
+    <footer><button class="button danger-button" data-delete-project type="button">${icon("trash-2", "Delete persona")}</button><button class="button quiet-button" data-close-dialog="versions-dialog" type="button">Close</button></footer>
   </div></dialog>
 
   <dialog id="export-dialog" class="modal"><div class="modal-surface export-modal">
@@ -754,6 +756,37 @@ async function duplicateCurrent(): Promise<void> {
   toast("Persona duplicated");
 }
 
+async function deleteCurrentProject(): Promise<void> {
+  const projectId = state.project.id;
+  const projectName = state.project.name.trim() || "Untitled Persona";
+  const confirmed = confirm(`Delete “${projectName}” from this browser?\n\nThis permanently removes the persona and all of its local versions. A linked workspace file will be disconnected but not deleted.`);
+  if (!confirmed) return;
+
+  if (state.saveTimer) {
+    clearTimeout(state.saveTimer);
+    state.saveTimer = null;
+  }
+  await workspaceSync.disconnect();
+  await removeProject(projectId);
+  state.projects = state.projects.filter((project) => project.id !== projectId);
+
+  let nextProject = state.projects[0];
+  if (!nextProject) {
+    nextProject = createBlankProject();
+    await saveProject(nextProject);
+    state.projects = [nextProject];
+  }
+
+  state.project = structuredClone(nextProject);
+  state.versions = await listVersions(nextProject.id);
+  localStorage.setItem("tomori-persona-creator.current", nextProject.id);
+  document.querySelector<HTMLDialogElement>("#versions-dialog")?.close();
+  renderApp();
+  await workspaceSync.activate(nextProject.id);
+  window.scrollTo({ top: 0 });
+  toast(`“${projectName}” deleted from this browser`);
+}
+
 async function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -898,6 +931,10 @@ app.addEventListener("click", async (event) => {
   }
   if (button.id === "new-project" || button.dataset.projectAction === "new") await addProject();
   if (button.id === "duplicate-project" || button.dataset.projectAction === "duplicate") await duplicateCurrent();
+  if (button.id === "delete-project-top" || button.dataset.projectAction === "delete" || button.hasAttribute("data-delete-project")) {
+    await deleteCurrentProject();
+    return;
+  }
   if (button.id === "theme-button") {
     state.theme = state.theme === "dark" ? "light" : "dark";
     localStorage.setItem("tomori-persona-creator.theme.v2", state.theme);
@@ -1031,16 +1068,6 @@ app.addEventListener("click", async (event) => {
     workspaceSync.syncLocalChanges();
     renderVersions();
     toast("Version deleted");
-  }
-  if (button.id === "delete-project") {
-    if (state.projects.length <= 1) return toast("Create another persona before deleting this one.", "error");
-    if (!confirm(`Delete “${state.project.name}” and all of its local versions?`)) return;
-    await workspaceSync.disconnect();
-    await removeProject(state.project.id);
-    state.projects = state.projects.filter((item) => item.id !== state.project.id);
-    document.querySelector<HTMLDialogElement>("#versions-dialog")?.close();
-    await switchProject(state.projects[0]?.id ?? "");
-    toast("Local persona deleted");
   }
   const exportKind = button.dataset.export;
   if (exportKind) {
