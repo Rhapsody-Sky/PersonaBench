@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title description">
   <title id="title">Persona Bench</title>
-  <desc id="description">A gold and teal PB monogram on a dark rounded workbench tile.</desc>
-  <defs>
-    <linearGradient id="frame" x1="18" y1="16" x2="112" y2="114" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#f0bd55"/>
-      <stop offset="0.48" stop-color="#d89424"/>
-      <stop offset="0.52" stop-color="#42d7d1"/>
-      <stop offset="1" stop-color="#159b99"/>
-    </linearGradient>
-    <radialGradient id="surface" cx="0" cy="0" r="1" gradientTransform="translate(43 29) rotate(48) scale(116)" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#2c2232"/>
-      <stop offset="1" stop-color="#100c14"/>
-    </radialGradient>
-  </defs>
-  <rect x="7" y="7" width="114" height="114" rx="29" fill="url(#surface)" stroke="url(#frame)" stroke-width="5"/>
-  <path d="M39 94V34h22c13 0 22 8 22 19s-9 19-22 19H48" fill="none" stroke="#efb84d" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M65 34v60h18c13 0 21-7 21-18 0-9-6-15-16-17 8-2 13-7 13-14 0-7-4-11-8-11" fill="none" stroke="#38cbc6" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M65 59h18" fill="none" stroke="#f7f2f8" stroke-opacity=".72" stroke-width="6" stroke-linecap="round"/>
-  <path d="M103 20v10M98 25h10" fill="none" stroke="#f5d98f" stroke-width="3.5" stroke-linecap="round"/>
+  <desc id="description">An expressive open head with a broad grin and ideas rising from within.</desc>
+
+  <!-- The lifted crown keeps the organic silhouette of the original mark while
+       turning the open head into a symbol for building and revising personas. -->
+  <path d="M49 75C55 39 87 16 126 16c34 0 63 16 78 43-27-1-51 5-70 15-24 13-48 16-72 9L49 75Z"/>
+
+  <!-- Head, eyes and grin are one even-odd silhouette so the expression remains
+       legible when the mark is inverted for the dark theme. -->
+  <path fill-rule="evenodd" d="M48 93c12-3 23-7 33-13 19 11 40 12 61 4 15-5 28-13 39-24 20 11 31 30 31 54v22c0 27-12 52-32 68v35h-35v-18c-6 2-13 3-20 3-44 0-81-34-81-78v-33c0-7 1-14 4-20Zm27 42c8-13 25-15 36-3-11 11-25 12-36 3Zm72-3c11-12 28-10 36 3-11 9-25 8-36-3Zm-66 27c7 33 30 49 51 49 24 0 44-18 51-51-17 10-34 15-51 15-18 0-35-4-51-13Z"/>
+
+  <!-- Teeth and small idea sparks add the playful, slightly mischievous tone. -->
+  <path d="M103 169v22M129 172v28M155 168v23" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/>
+  <path d="M85 68c-7-12-5-22 3-31M112 67c-1-16 6-27 18-34M142 60c6-13 16-21 30-24" fill="none" stroke="#000" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="88" cy="31" r="5"/>
+  <path d="M180 29v14M173 36h14" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/>
 </svg>

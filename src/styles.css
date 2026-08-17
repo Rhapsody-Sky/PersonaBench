@@ -1498,6 +1498,10 @@ input[type="range"] {
   width: 180px;
 }
 
+body[data-theme="dark"] .fatal-error img {
+  filter: invert(1) brightness(1.25);
+}
+
 @keyframes pulse {
   to { opacity: 0.38; }
 }
