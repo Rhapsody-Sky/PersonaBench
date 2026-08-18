@@ -1,6 +1,6 @@
 ---
 name: persona-bench-collaborator
-description: Create, inspect, revise, validate, and explain Persona Bench personas and JSON files, including distinctive character voices and high-quality sample dialogue. Use when an LLM or agent helps a human design a character, develops or audits speech style, writes dialogue that must not sound generic or AI-generated, edits a Persona Bench Builder backup, explains persona sections or behavior modes, prepares TomoriBot or general-LLM exports, or guides a user through exporting and reimporting a Persona Bench project.
+description: Create, inspect, revise, validate, and explain Persona Bench personas and JSON files, including layered character design, distinctive voices, and high-quality sample dialogue. Use when an LLM or agent helps a human design a multidimensional character, develops or audits speech style, writes dialogue that must not sound generic or AI-generated, edits a Persona Bench Builder backup, explains persona sections or behavior modes, prepares TomoriBot or general-LLM exports, or guides a user through exporting and reimporting a Persona Bench project.
 ---
 
 # Persona Bench Collaborator
@@ -98,11 +98,11 @@ Every key in `sections` contains:
 | `personality` | Temperament, decision patterns, social behavior, and internal contradictions. |
 | `history` | Past events that causally shaped present beliefs and behavior. |
 | `currentSituation` | Present location, role, pressures, obligations, and unresolved immediate problem. |
-| `values` | Principles used to resolve moral choices and trade-offs. |
-| `likes` | Sources of comfort, energy, attention, or delight. |
-| `dislikes` | Sources of friction, irritation, aversion, or exhaustion. |
-| `hopes` | Desired futures that create direction and vulnerability. |
-| `fears` | Outcomes or truths that drive avoidance, defensiveness, or overcompensation. |
+| `values` | Principles from several life domains used to resolve moral choices and trade-offs. |
+| `likes` | Varied sources of comfort, energy, attention, delight, or fascination. |
+| `dislikes` | Varied sources of friction, irritation, aversion, threat, or exhaustion. |
+| `hopes` | Desired futures across different timescales and life domains that create direction and vulnerability. |
+| `fears` | Concrete, relational, personal, moral, or existential outcomes that drive avoidance, defensiveness, or overcompensation. |
 | `motivations` | Reasons to act now; the engine behind proactive choices. |
 | `lifeGoals` | Long-term outcomes that define a meaningful life for the character. |
 | `strengths` | Dependable capabilities and constructive traits without implying infallibility. |
@@ -119,6 +119,12 @@ Every key in `sections` contains:
 | `neverSays` | Negative voice constraints: phrases, attitudes, or registers that break character. |
 
 Write information in the most specific applicable section. Avoid repeating the same sentence across multiple sections. Preserve useful tension—for example, a stated value may conflict with a fear or weakness.
+
+## Layered character construction
+
+When creating, revising, or auditing `values`, `likes`, `dislikes`, `hopes`, `fears`, or the character's overall dimensionality, read [references/layered-character-design.md](references/layered-character-design.md) completely and follow its construction workflow and depth audit.
+
+Require at least three genuinely distinct thematic domains in each of those five fields and aim for five for a major character. Count independent concerns, not synonymous phrasings or consequences of the same premise. Treat the archetype as an organizing lens rather than the explanation for the entire sheet. If a single obsession is intentionally the whole design, document that choice and its costs explicitly; otherwise revise a sheet whose facts are almost all predictable from one base archetype.
 
 ## Custom attributes
 
@@ -171,7 +177,9 @@ Use paired examples. For a proud logistics-minded character who converts fear in
 }
 ```
 
-Treat each pair as executable evidence of how this particular character perceives, chooses, evades, attacks, comforts, jokes, or changes register. Select conversation fragments that are plausible and especially revealing for this character because of their biography, relationships, work, values, flaws, pressures, and behavior modes. Derive the line from that context before styling the prose. Vary counterpart, stakes, emotional temperature, and active behavior mode. Do not merely paraphrase the personality section, use generic personality-test prompts, or manufacture uniqueness with repeated catchphrases.
+Treat each pair as executable evidence of how this particular character perceives, chooses, evades, attacks, comforts, jokes, or changes register. Select conversation fragments that are plausible and especially revealing for this character because of their biography, relationships, work, values, flaws, pressures, and behavior modes. Derive the line from that context before styling the prose. Vary counterpart, stakes, emotional temperature, active behavior mode, conversational function, and response length. Let concise reactions remain concise and reserve longer turns for situations and voice patterns that genuinely earn them.
+
+Keep reusable voice mechanics in `speechStyle`, `vocabulary`, `mannerisms`, and `neverSays`. Use sample dialogues to demonstrate those rules in action, not to replace weak rules with more examples or more words.
 
 Before accepting a set, use the reference's positive scorecard and revision loop. Require clear character causality, recognition, behavioral teaching, relationship-aware variation, speakability, transfer to unseen prompts, and a clean final handoff.
 
@@ -241,6 +249,10 @@ Before returning an edited Builder backup, verify:
 - IDs are non-empty and unique within their collection.
 - Every behavior mode has `condition` and `behavior` strings.
 - Every dialogue has `input` and `output` strings.
+- `values`, `likes`, `dislikes`, `hopes`, and `fears` each cover at least three distinct thematic domains, or the sheet explicitly documents an intentional single-minded design.
+- The overall sheet contains important axes that are not predictable from one base archetype.
+- Sample outputs vary in length according to situation and conversational function; longer turns are exceptional and purposeful.
+- Voice fields state reusable rules, while sample dialogues demonstrate those rules without becoming explanatory walls of text.
 - Timestamps are valid ISO-8601 strings and `revision` is a positive integer.
 - Avatar base64 data, unknown fields, and unrelated user content remain intact.
 - The result parses as strict JSON.

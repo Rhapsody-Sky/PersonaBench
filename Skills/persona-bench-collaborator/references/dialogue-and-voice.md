@@ -18,7 +18,7 @@ Use this reference when writing or evaluating Persona Bench voice fields and sam
 
 ## Target result
 
-Create an ordered set of six to ten user-character exchanges when the project allows it. Make the set function as behavioral few-shot examples for the runtime LLM. Together, the samples should teach:
+Create an ordered set of six to ten user-character exchanges when the project allows it. Make the set function as behavioral few-shot examples for the runtime LLM. Keep the reusable voice system in `speechStyle`, `vocabulary`, `mannerisms`, and `neverSays`; let each exchange efficiently demonstrate selected parts of that system. Together, the samples should teach:
 
 - what the character notices and overlooks;
 - how they interpret social intent;
@@ -47,6 +47,8 @@ Follow this sequence:
 10. Score it, repair weak samples, and repeat until the voice transfers to unseen prompts.
 
 Treat sample dialogues as the final synthesis step of persona creation. Finish the identity, history, situation, personality, relationships, values, motivations, flaws, boundaries, modes, and voice fields first. Then use dialogue to prove those parts form one coherent person.
+
+Strengthen an unclear voice by improving its operational rules before adding examples. Dialogue provides embodied evidence; it does not carry the full burden of defining the voice through volume or exposition.
 
 ## Build the voice engine
 
@@ -144,6 +146,18 @@ Build a portfolio from the most relevant of these functions:
 
 Let each exchange embody two to four sheet facts. Spread major character causes across the set so no single response has to recite the whole persona.
 
+### Design length from the situation
+
+Give the portfolio an intentional length contour. Include at least three meaningfully different response lengths when the set size allows it:
+
+- **brief:** a word, fragment, or single sentence for interruption, refusal, recognition, dry humor, shock, concealment, or a decisive correction;
+- **medium:** one to three sentences for most explanations, bargains, challenges, practical care, or relationship turns;
+- **extended:** a purposeful longer turn for teaching, confession, persuasion, rambling, ritual, storytelling, or a triggered mode when both character and situation support it.
+
+Choose length after identifying desire, tactic, relationship, emotional pressure, and speech act. A high-stakes moment may produce one clipped word; a safe technical subject may release a fluent paragraph. Let those differences teach the runtime how this person expands and contracts.
+
+Make extended samples exceptional within the set. Give every sentence an active job: advance the tactic, reveal attention, alter the relationship, or produce a consequence. Move durable explanation about the voice or persona into the appropriate character field instead of making the character recite it.
+
 ## Draft each exchange
 
 For every pair, make these private decisions before writing the final output:
@@ -154,13 +168,14 @@ For every pair, make these private decisions before writing the final output:
 4. Select the details this character would notice first.
 5. Select two to four persona facts that should shape the response silently.
 6. Pass the thought through the defined rhythm, diction, register, and mannerism triggers.
-7. Let the output change something: terms, distance, knowledge, trust, tension, or direction.
+7. Choose the shortest natural length that completes the character's immediate tactic.
+8. Let the output change something: terms, distance, knowledge, trust, tension, or direction.
 
 Silently draft at least three candidates with different tactics. Compare a deflection, correction, bargain, joke, or refusal rather than producing synonym variants. Select the candidate that reveals the most character with the least explanation.
 
 ### Write for the mouth
 
-Read each candidate aloud at normal speed. Shape punctuation around the intended breath and timing. Use controlled fragments, pivots, interruption, asymmetry, hesitation, or fluency when the voice engine calls for them. Let ordinary speech remain ordinary when that is truthful to the character.
+Read each candidate aloud at normal speed. Shape punctuation around the intended breath and timing. Use controlled fragments, pivots, interruption, asymmetry, hesitation, or fluency when the voice engine calls for them. Let ordinary speech remain ordinary when that is truthful to the character. Read the full portfolio aloud as well: its turns should visibly expand and contract rather than settling into one repeated answer size.
 
 ### Demonstration
 
@@ -209,6 +224,7 @@ Read all outputs consecutively as one performance. Score each dimension from 0 t
 | Scenario fit | the inputs plausibly belong to this character's life and expose relevant tensions |
 | Behavioral teaching | outputs demonstrate attention, assumptions, priorities, tactics, boundaries, and consequences |
 | Rhythm | sentence mechanics follow a distinctive, varied, context-sensitive pattern |
+| Length dynamics | responses visibly vary in size according to tactic, stakes, relationship, and speech act; every extended turn earns its space |
 | Relationship | register and strategy respond to counterpart, intimacy, and power |
 | Subtext | important feeling or motive becomes inferable through behavior and language |
 | Range | one stable person appears across ordinary, joyful, intimate, pressured, and triggered moments |
@@ -216,7 +232,7 @@ Read all outputs consecutively as one performance. Score each dimension from 0 t
 | Transfer | another writer or model could extrapolate the voice to an unseen prompt |
 | Handoff | the final baseline releases its situation and supports a fresh conversation |
 
-Require at least 18 out of 22 overall and a score of 2 for Recognition, Behavioral teaching, Transfer, and Handoff. Revise the weakest causal layer rather than decorating the surface.
+Require at least 20 out of 24 overall and a score of 2 for Recognition, Behavioral teaching, Length dynamics, Transfer, and Handoff. Revise the weakest causal layer rather than decorating the surface.
 
 ## Revision moves
 
@@ -233,6 +249,8 @@ Use this table to turn a weak result into a stronger construction:
 | One-note performance | keep the stable identity while changing emotion, status, intimacy, and conversational tactic |
 | Caricature | retain the strongest causal signal and add ordinary baseline behavior plus register variation |
 | Generic scenario | derive the input from a documented duty, relationship, fear, flaw, interest, or trigger |
+| Explanatory wall of text | isolate the immediate speech act, keep the most revealing choices, and move reusable persona guidance into the voice fields |
+| Uniform sample length | choose each response size from its tactic and pressure, then curate a visible brief-medium-extended contour |
 | Weak final handoff | move charged material earlier and finish with a self-contained baseline pair |
 
 Repeat this loop:
@@ -250,6 +268,8 @@ Use these as a final diagnostic after the positive draft exists. Check whether t
 
 - automatic reassurance, gratitude, agreement, or offers of help;
 - input repetition followed by a tidy explanatory mini-essay;
+- dialogue volume or answer length used as a substitute for precise reusable voice rules;
+- uniformly long, uniformly polished, or mechanically equal-sized examples regardless of speech act;
 - complete emotional self-analysis in the heat of the moment;
 - generic therapeutic vocabulary, profundity, aphorisms, or motivational closure;
 - negation pivots, mirrored antitheses, rhetorical triads, or repeated fragment punches;
