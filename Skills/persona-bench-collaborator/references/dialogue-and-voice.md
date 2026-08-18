@@ -1,368 +1,278 @@
 # Character Voice and Sample Dialogue
 
-Use this reference whenever writing or evaluating Persona Bench voice fields or sample dialogues. The goal is not generic realism. The goal is dialogue that could plausibly belong to this character and almost nobody else.
+Use this reference when writing or evaluating Persona Bench voice fields and sample dialogues. Produce dialogue that reveals one specific mind making characteristic choices, not merely prose with decorative quirks.
 
-## Core model
+## Contents
 
-A voice is a pattern of choices under pressure:
+- [Target result](#target-result)
+- [Production loop](#production-loop)
+- [Build the voice engine](#build-the-voice-engine)
+- [Design the sample portfolio](#design-the-sample-portfolio)
+- [Draft each exchange](#draft-each-exchange)
+- [Use subtext and mannerisms](#use-subtext-and-mannerisms)
+- [Order for conversation handoff](#order-for-conversation-handoff)
+- [Quality scorecard](#quality-scorecard)
+- [Revision moves](#revision-moves)
+- [Compact anti-LLM guardrails](#compact-anti-llm-guardrails)
+- [Research resources](#research-resources)
 
-`worldview + attention + desire + relationship + emotional defense + idiolect + context`
+## Target result
 
-Do not start by decorating neutral dialogue with slang. First determine what the character notices, wants, refuses to admit, and expects from the other speaker. Style the resulting thought only after those choices are clear.
+Create an ordered set of six to ten user-character exchanges when the project allows it. Make the set function as behavioral few-shot examples for the runtime LLM. Together, the samples should teach:
 
-Persona Bench samples are **portable voice probes**, not fragments of one continuing plot scene. Do not invent a permanent scene goal, dramatic arc, or prose setting. Give each pair only the local stimulus contained in `input`; infer a momentary speech act for `output` such as deflecting, correcting, impressing, testing, bargaining, warning, concealing, or reaching out. The set should demonstrate how the voice generalizes across future conversations.
+- what the character notices and overlooks;
+- how they interpret social intent;
+- what they want from an exchange;
+- which conversational tactics they choose;
+- how biography and environment shape rhythm and vocabulary;
+- how relationship, status, emotion, and behavior modes alter the voice;
+- how they enforce boundaries, reveal care, manage shame, enjoy things, and recover from conflict;
+- what their stable baseline sounds like immediately before a new conversation begins.
 
-Every sample exchange must perform at least two jobs:
+Aim for decisive recognizability. A reader or listener should sense the same person across ordinary, intimate, funny, pressured, and triggered moments, even with names and metadata hidden.
 
-- demonstrate a repeatable voice pattern;
-- demonstrate a characteristic reaction or decision pattern;
-- reveal a judgment, desire, vulnerability, relationship dynamic, or behavioral rule.
+## Production loop
 
-Prefer lines that also create movement: a refusal changes terms, a joke tests intimacy, an evasion exposes fear, or a concession costs something.
+Follow this sequence:
 
-## Treat dialogue as the final synthesis step
+1. Read the complete character sheet.
+2. Convert character facts into a causal voice engine.
+3. Write a short operational voice signature.
+4. Select likely, revealing conversation fragments from the character's life.
+5. Draft each response from an immediate desire and tactic.
+6. Render the response through the voice signature.
+7. Curate the samples as a varied portfolio.
+8. Order context-bound examples first and the stable baseline last.
+9. Read the set aloud as one performance.
+10. Score it, repair weak samples, and repeat until the voice transfers to unseen prompts.
 
-Do not draft sample dialogues while the persona is still structurally incomplete. Read every populated standard section, custom attribute, relationship, boundary, continuity fact, and behavior mode first. Dialogue is the final proof that those parts form one person rather than a list of traits.
+Treat sample dialogues as the final synthesis step of persona creation. Finish the identity, history, situation, personality, relationships, values, motivations, flaws, boundaries, modes, and voice fields first. Then use dialogue to prove those parts form one coherent person.
 
-Before drafting, create a private evidence map for the set:
+## Build the voice engine
 
-- which identity, history, value, fear, motivation, relationship, skill, flaw, and current-situation facts affect speech;
-- which `speechStyle`, `vocabulary`, `mannerisms`, and `neverSays` rules must be demonstrated;
-- which behavior modes require a triggered example;
-- which facts should shape choices silently rather than be mentioned.
+### Map life into language
 
-Each exchange should embody two to four relevant facts without reciting them. Across the complete set, cover the character's most important voice-producing causes. Do not force the entire sheet into every answer.
+Create causal links between the sheet and observable speech behavior:
 
-Treat the final pairs as behavioral few-shot examples for the model that will run the persona. They teach not only how the character phrases an answer, but what the character notices, prioritizes, assumes, resists, conceals, and does in response.
-
-## Build a voice fingerprint
-
-Infer a compact fingerprint from the persona before drafting. Record decisions in `speechStyle`, `vocabulary`, `mannerisms`, and `neverSays` when editing the project.
-
-### Derive language from a life
-
-Build causal links instead of demographic shorthand:
-
-| Source | Questions | Possible linguistic consequence |
+| Character source | Ask | Translate into language |
 | --- | --- | --- |
-| Household and upbringing | Who was allowed to interrupt, complain, joke, or name a problem? | apology habits, indirect requests, interruption tolerance, ways of disagreeing |
-| Place and community | Which speech communities felt like home, danger, aspiration, or exclusion? | register, idiom sources, code-switching, deliberate convergence or divergence |
-| Education and reading | How did the character learn to organize and prove a thought? | clause structure, evidence order, abstraction, quotation, correction habits |
-| Work and practiced skill | What distinctions must they notice to survive or excel? | diagnostic questions, specialist verbs, metaphor domains, standards of certainty |
-| Status and institutions | When were words rewarded, punished, doubted, or recorded? | hedging, legal precision, strategic vagueness, deference, verbal armor |
-| Desired persona | How do they want to be perceived? | rehearsed polish, cultivated bluntness, borrowed slang, understatement, hypercorrection |
-| Shame and defense | What must never become visible? | jokes at the wrong moment, topic pivots, passive constructions, over-explanation, silence |
-| Intimacy history | What counts as affection or danger? | teasing, practical care, pet names, formal distance, refusal to ask directly |
+| Household and upbringing | Who could interrupt, complain, joke, ask, or disagree safely? | request style, apology habits, interruption tolerance, ways of challenging |
+| Place and community | Which groups felt like home, danger, exclusion, or aspiration? | register, idiom sources, code-switching, convergence, deliberate distance |
+| Education and reading | How did they learn to organize and prove a thought? | evidence order, abstraction, clause structure, quotation and correction habits |
+| Work and practiced skill | Which distinctions must they notice to succeed? | specialist verbs, diagnostic questions, metaphor domains, standards of certainty |
+| Institutions and status | When were words rewarded, doubted, punished, or recorded? | precision, hedging, strategic vagueness, verbal armor, deference |
+| Desired image | How do they want to appear to others? | cultivated bluntness, polish, understatement, borrowed slang, hypercorrection |
+| Shame and defenses | Which truth must remain hard to see? | jokes, topic pivots, excessive detail, omission, passive constructions, silence |
+| Intimacy history | What feels like affection, exposure, safety, or danger? | teasing, practical care, pet names, formality, indirect bids for closeness |
+| Values and motives | Which outcome matters most in a conversational choice? | what they defend, trade, prioritize, concede, or refuse |
+| Flaws and fears | How does pressure distort their otherwise useful habits? | escalation, tunnel vision, brittle certainty, appeasement, withdrawal, control |
 
-Treat these as hypotheses, not stereotypes. Age, class, region, disability, culture, or multilingualism never mechanically determines a voice. Use the persona's specific experiences, choices, affiliations, and resistance to them.
+Use specific experiences and chosen affiliations as evidence. Let demographic facts create research questions rather than automatic accents or stereotypes.
 
-### 1. Perception and worldview
+### Define the voice signature
 
-- What does the character notice first: price, hierarchy, physical danger, beauty, hypocrisy, mechanisms, exits, or another person's mood?
-- What do they routinely misread or ignore?
-- Which comparisons arise naturally from their work, home, era, obsessions, and formative experiences?
-- What belief colors even neutral observations?
+Fill this private template with operational choices:
 
-Voice begins with selected reality. Two characters should not describe the same room, insult, favor, or failure with interchangeable details.
+```text
+Attention: notices ___ before ___; routinely misses ___.
+Default tactic: tries to ___ by ___ rather than ___.
+Thought order: begins with ___, moves through ___, lands on ___.
+Clause architecture: usually ___; changes to ___ when ___.
+Information release: states ___ early, withholds ___, reveals ___ through ___.
+Diction: favors ___; metaphor sources come from ___; register is ___.
+Humor: uses ___ toward ___, especially when ___.
+Repair behavior: after a mistake or exposed feeling, they ___.
+Relationship shifts: with strangers ___; with power ___; with trusted people ___.
+Pressure shift: under fear/shame/anger, the rhythm becomes ___.
+Behavior-mode shift: when ___ activates, priorities and speech change by ___.
+Stable identity: across every register, they continue to ___.
+```
 
-### 2. Conversational strategy
+Turn broad adjectives into mechanics. Translate “witty” into a humor method and target. Translate “guarded” into the topics, tactics, and sentence changes used to protect something. Translate “unusual rhythm” into a repeatable thought order and clause pattern.
 
-- Direct answer, counterquestion, story, joke, correction, bargain, threat, silence, or deliberate misunderstanding?
-- Do they seek closeness, control, approval, safety, information, amusement, or escape?
-- What do they say instead of the thing they cannot admit?
-- How do they behave when losing status or control?
+### Specify rhythm precisely
 
-Dialogue is action. Write what the character is doing to the other person, not merely what information they are transmitting.
-
-### 3. Idiolect
-
-Choose a restrained combination of signals:
-
-- sentence length and variation;
-- fragments versus carefully nested syntax;
-- concrete versus abstract diction;
-- favorite semantic fields and metaphor sources;
-- formality, profanity, jargon, idioms, and contractions;
-- question-to-statement ratio;
-- precision, exaggeration, hedging, correction, and self-interruption;
-- humor mechanism: deadpan, teasing, absurdity, understatement, pedantry, misdirection, or none;
-- preferred terms of address and names the character refuses to use.
-
-Use one to three strong signals per exchange. Do not force every trait into every line. A catalogue of quirks sounds more synthetic than a mostly natural voice with stable underlying choices.
-
-### 3a. Specify the rhythm mechanically
-
-“Speaks unusually” and “has a distinctive rhythm” are unusable. Choose observable defaults and controlled deviations:
+Choose a small combination of observable patterns:
 
 - **thought order:** verdict then evidence; evidence then reluctant verdict; associative detour then point; question then self-answer;
 - **clause architecture:** bare clauses; chained additions; nested qualifications; delayed main clause; parenthetical afterthoughts;
-- **turn shape:** one clean strike; escalating sequence; answer plus counterquestion; partial answer plus pivot; correction after apparent completion;
-- **information release:** names the conclusion immediately; circles the dangerous noun; withholds the subject; lets the final word reframe the line;
-- **tempo:** compressed verbs and omitted connectors; measured parallel clauses; bursts interrupted by recalibration; long control followed by a blunt fragment;
-- **repair behavior:** never backtracks; replaces one exact word; denies having misspoken; trails off only around one vulnerability;
-- **interaction rhythm:** interrupts predictions, waits too long, mirrors a phrase to challenge it, refuses the premise, or answers a different layer of the question.
+- **turn shape:** one clean strike; answer plus counterquestion; partial answer plus pivot; apparent ending followed by a correction;
+- **information release:** immediate conclusion; delayed dangerous noun; withheld subject; final word that reframes the line;
+- **tempo:** compressed verbs; measured clauses; bursts followed by recalibration; long control followed by a blunt fragment;
+- **repair:** exact word replacement; defensive clarification; denial of the mistake; loss of fluency around one vulnerability;
+- **interaction rhythm:** prediction, interruption, deliberate pause, phrase mirroring, premise challenge, or answering the social layer beneath the question.
 
-Describe frequency and trigger. For example: “Defaults to conclusion-first fragments; under shame, adds increasingly technical qualifications until the original answer disappears.” This produces more reliable samples than “short, quirky speech.”
+Attach frequency and trigger to each strong pattern. For example: “Defaults to conclusion-first fragments; under shame, adds technical qualifications until the original answer nearly disappears.”
 
-Create contrastive constraints for important traits:
+For each defining pattern, record:
 
-- **Likely:** what the character recurrently does and under which conditions.
-- **Unlikely:** the tempting generic formulation or rhythm they avoid.
-- **Break condition:** when stress, intimacy, performance, or a behavior mode changes the rule.
+- **baseline:** its ordinary form;
+- **variation:** how it appears without repeating identical syntax;
+- **shift trigger:** how intimacy, status, stress, or a mode changes it.
 
-### 4. Register shifts
+## Design the sample portfolio
 
-Define how the voice changes with:
+### Choose character-specific situations
 
-- stranger versus trusted person;
-- superior versus subordinate;
-- safety versus threat;
-- public performance versus private speech;
-- affection, shame, anger, exhaustion, excitement, and grief;
-- an active behavior mode.
+Derive each input from actual material in the sheet. Privately note:
 
-Consistency does not mean sameness. The stable identity should remain recognizable while sentence control, candor, vocabulary, and humor change with context.
+- the facts or tensions that make this interaction probable;
+- the likely counterpart and relationship;
+- the pressure, opportunity, misunderstanding, or temptation;
+- the reaction pattern a future model should learn.
 
-### 5. Mannerisms in dialogue
+Use conversation fragments a person in this character's life might genuinely say. Good sources include a colleague challenging their method, a sibling invoking shared history, a client offering the wrong incentive, a rival finding a weak point, a friend misreading practical care, or an ordinary object activating a documented mode.
 
-Let verbal mannerisms affect timing and choice: delayed answers, exact corrections, unfinished admissions, compulsive qualification, topic pivots, echoed words, strategic silence, inappropriate jokes, or a sudden change of register. Use them when emotion or relationship triggers them, not as decoration in every reply.
+Make the input concise and speakable. Supply enough context through the interlocutor's words for the response to carry meaning. Use assertions, accusations, interruptions, offers, observations, mistaken assumptions, requests, and admissions alongside questions.
 
-Avoid generic roleplay wrappers such as repeated sighing, chuckling, smirking, head tilting, or asterisk actions. Include a physical beat only when the persona defines it, the text format supports it, and the beat carries subtext the words cannot. The line must remain recognizable without the beat.
+### Cover a useful range
 
-## Drafting workflow
+Build a portfolio from the most relevant of these functions:
 
-### Step 1: Extract causal anchors
+| Function | What the pair should reveal |
+| --- | --- |
+| Baseline | default attention, tactic, rhythm, and social temperature |
+| Disagreement | values, status behavior, and preferred form of resistance |
+| Competence | how expertise shapes thought without turning the character into a generic assistant |
+| Vulnerability | the defense or indirect signal that appears around a tender truth |
+| Relationship shift | recognizable code-switching with a stranger, rival, superior, sibling, friend, or lover |
+| Delight | what captures attention and loosens or intensifies the usual rhythm |
+| Pressure | the characteristic distortion produced by anger, fear, shame, fatigue, or loss of control |
+| Behavior mode | the concrete priority and speech change caused by a documented trigger |
+| Boundary | how refusal, redirection, objection, or withdrawal actually sounds |
+| Repair | how they concede, apologize, reframe, or reconnect after friction |
 
-Read the complete persona. Select three to five facts that causally shape speech, not just describe it. Connect each fact to a verbal consequence.
+Let each exchange embody two to four sheet facts. Spread major character causes across the set so no single response has to recite the whole persona.
 
-Example: years repairing unreliable machinery may produce diagnostic metaphors, distrust of elegant promises, and a habit of asking what fails first. Do not reduce this to saying “gear” in every exchange.
+## Draft each exchange
 
-### Step 2: Write a voice hypothesis
+For every pair, make these private decisions before writing the final output:
 
-Summarize the character's default speech in two or three operational sentences. Include how they pursue goals, conceal vulnerability, and change under pressure. Avoid mood-board adjectives such as “witty,” “quirky,” or “confident” unless translated into observable language behavior.
+1. Identify what the other speaker wants.
+2. Give the character one immediate conversational desire.
+3. Choose a tactic: deflect, correct, test, bargain, impress, teach, conceal, threaten, comfort, joke, withdraw, reconnect, or another fitting action.
+4. Select the details this character would notice first.
+5. Select two to four persona facts that should shape the response silently.
+6. Pass the thought through the defined rhythm, diction, register, and mannerism triggers.
+7. Let the output change something: terms, distance, knowledge, trust, tension, or direction.
 
-### Step 3: Audition off the page
+Silently draft at least three candidates with different tactics. Compare a deflection, correction, bargain, joke, or refusal rather than producing synonym variants. Select the candidate that reveals the most character with the least explanation.
 
-Draft disposable speech about an irrelevant situation before writing final samples. Let the character complain about a delayed meal, explain a broken household object, decline an invitation, or ask for an undeserved favor. This separates voice discovery from plot exposition.
+### Write for the mouth
 
-### Step 4: Select a diagnostic slate
+Read each candidate aloud at normal speed. Shape punctuation around the intended breath and timing. Use controlled fragments, pivots, interruption, asymmetry, hesitation, or fluency when the voice engine calls for them. Let ordinary speech remain ordinary when that is truthful to the character.
 
-Derive situations from this character before choosing coverage categories. For every proposed pair, privately record:
+### Demonstration
 
-- the persona fact or tension that makes this interaction probable;
-- who is likely to say the input and what their relationship is to the character;
-- the choice, pressure, temptation, misunderstanding, or opportunity the input creates;
-- the reaction pattern the output should teach a future model.
-
-Reject a prompt selected merely because it is a standard personality-test question. Prefer conversation fragments that could plausibly recur in this character's life: a colleague challenges their method, a sibling invokes old history, a client offers the wrong incentive, a rival notices a concealed weakness, or an ordinary object activates a documented behavior mode. Instantiate these from the actual sheet; do not add unsupported canon.
-
-Create a set that samples different sides of the same person. Prefer six to ten character-specific exchanges when the project allows it:
-
-1. low-stakes baseline;
-2. disagreement or refusal;
-3. competence or teaching without becoming an assistant;
-4. vulnerability they do not state directly;
-5. altered status or relationship register;
-6. humor, delight, or genuine fascination;
-7. pressure, anger, fear, or loss of control;
-8. at least one important behavior-mode trigger;
-9. repair after conflict or a costly concession;
-10. a boundary the character enforces.
-
-Avoid making every user input a direct interview question. Use accusations, interruptions, bad offers, shared observations, silence, mistaken assumptions, and concrete events.
-
-These are diagnostic prompts, not a connected scene. The local “want” exists only to select a speech act for that turn; it does not add new canon or require a scene objective field in the persona.
-
-Keep `input` concise and speakable. It should contain enough relational or situational pressure to make the response meaningful without surrounding narration. Phrase it as something a real interlocutor would say, not “How would you react if...?” or “Tell me about your personality.”
-
-### Step 4a: Order for conversation handoff
-
-Preserve deliberate array order. Persona Bench exports complete dialogue pairs in the order shown; runtimes may inject them as preceding user-character turns. The final example can therefore sit immediately before the real user's first message and exert the strongest local priming.
-
-Order the set from more context-bound to more generally applicable:
-
-1. specialized knowledge, unusual relationship dynamics, or narrow canon;
-2. behavior-mode triggers, conflict, vulnerability, and high emotional pressure;
-3. ordinary recurring interactions and the stable baseline;
-4. **last:** the most context-neutral, low-activation example that still unmistakably demonstrates the character's default voice and reaction style.
-
-“Most general” describes the final example's situation, not bland language. Keep the response character-specific while avoiding a named counterpart, unresolved emergency, active temporary mode, niche topic, strong emotional residue, scene-dependent command, or assumption that the next user message continues that example.
-
-If there is only one example, make it the stable baseline. Prefer several ordered examples so specialized behavior is still demonstrated without contaminating the fresh-conversation handoff.
-
-### Step 5: Draft from private intent
-
-For each exchange, privately determine:
-
-- what the other speaker wants;
-- what the character wants right now;
-- what the character will not say plainly;
-- the relationship and current balance of power;
-- the tactic chosen;
-- what changes by the end of the reply.
-
-Do not place this analysis in the exported dialogue. Let it create subtext.
-
-For agent-assisted writing, silently draft at least three candidates that use genuinely different tactics. Reject synonym-level variants. Select or combine only after comparing them against the voice fingerprint.
-
-### Step 6: Compress and roughen selectively
-
-Remove throat-clearing, repeated premises, explanatory summaries, and emotional labels already evident in the line. Allow controlled fragments, pivots, interruptions, implication, and asymmetry when they fit the character. Written dialogue should evoke speech without transcribing every filler or stumble.
-
-### Step 7: Read aloud
-
-Read every output aloud at normal speed. Fix tongue-twisters, accidental rhythmic repetition, implausible breath length, and punctuation that produces the wrong timing. The line must fit the character's mouth as well as the data model.
-
-## Subtext
-
-Treat dialogue as text, context, and emotional charge. Characters often answer the social meaning rather than the literal sentence.
-
-Weak:
-
-> Input: “Are you worried she'll leave?”  
-> Output: “Yes. I am afraid of abandonment because people have left me before.”
-
-Stronger for a proud, logistics-minded character:
+For a proud logistics-minded character who converts fear into planning:
 
 > Input: “Are you worried she'll leave?”  
 > Output: “Her train is at six. I moved the meeting to five-thirty.”
 
-The stronger version makes fear inferable through planning and control. Do not make all dialogue indirect; directness can be a meaningful character choice. Avoid a long run in which everyone states exactly what they feel and why.
+The response demonstrates attention, defense, tactic, and emotional subtext at once. Apply the same principle through the unique causal engine of the actual persona.
 
-## Avoid the default LLM voice
+## Use subtext and mannerisms
 
-Reject these patterns unless the persona specifically supports them:
+### Make emotion inferable
 
-- automatic validation, reassurance, gratitude, or offers to help;
-- repeating the input before answering;
-- tidy mini-essays with setup, balanced explanation, and conclusion;
-- complete emotional self-awareness during moments of pressure;
-- therapeutic labels and boundary language foreign to the character's life;
-- generic profundity, polished aphorisms, and motivational closure;
-- symmetrical contrasts and rhetorical lists used in every reply;
-- overuse of names, catchphrases, ellipses, em dashes, or stage directions;
-- explaining the joke, metaphor, implication, or emotion after it lands;
-- resolving conflict too quickly because the speaker behaves like a cooperative assistant;
-- uniform eloquence across education, fatigue, panic, intimacy, and social status;
-- invented dialect built from stereotypes or phonetic caricature.
+Let text, context, and emotional charge cooperate. Express difficult feelings through choices such as planning, correction, joking, bargaining, changing the subject, becoming unusually formal, offering practical care, or selecting one revealing detail.
 
-Explicitly scan for these high-frequency model constructions:
+Use direct disclosure when bluntness, trust, exhaustion, confrontation, or growth makes it the characteristic action. Vary the distance between literal words and underlying meaning across the portfolio.
 
-- negation pivots such as “not X, but Y,” “it isn't X; it's Y,” or successive “not this, not that” clauses;
-- antithetical slogan lines that manufacture depth by opposing two abstract nouns;
-- one-two-three punches: three balanced clauses, three clipped sentences, or two denials followed by a polished conclusion;
-- repeated sentence openings and mirrored grammatical shapes;
-- fragment stacks used as synthetic intensity rather than the character's actual processing rhythm;
-- em dashes, hyphenated interruptions, ellipses, and semicolon-heavy polish used as default cadence;
-- a final miniature moral, mic-drop line, or neat emotional summary;
-- “Maybe,” “Perhaps,” or “The truth is” openings that merely stage generic profundity.
+### Make mannerisms functional
 
-Default to none of these. Permit one only when the voice fingerprint establishes it as a meaningful, context-sensitive habit and the surrounding samples prove broader range. Ordinary compound words are not the target; the constraint concerns punctuation and rhetorical construction.
+Use verbal mannerisms to carry timing and strategy: delayed answers, exact corrections, unfinished admissions, compulsive qualification, topic pivots, echoed words, strategic silence, mistimed jokes, or abrupt register changes.
 
-Do not merely blacklist fashionable words. Diagnose the deeper failure: neutral worldview, assistant-like intent, frictionless cooperation, excessive explicitness, or identical rhythm.
+Tie each mannerism to a trigger and purpose. A correction can restore control; an unfinished sentence can protect shame; an echoed phrase can challenge someone without answering them. If a physical beat is canonical and the format supports it, use one that adds subtext the words cannot carry alone.
 
-## Quality gate
+## Order for conversation handoff
 
-Do not accept a dialogue set until it passes every test.
+Preserve deliberate array order. Persona Bench exports complete pairs in the order shown, and runtimes may inject them as preceding user-character turns. The final example can sit immediately before the real user's first message and exert the strongest local priming.
 
-### Final performance audit
+Order examples from context-bound to broadly applicable:
 
-After the individual tests, read all outputs consecutively as one performance and answer these questions explicitly in private:
+1. specialized knowledge, narrow canon, or unusual relationship dynamics;
+2. triggered modes, conflict, vulnerability, and strong emotional pressure;
+3. ordinary recurring interactions;
+4. **last:** a context-neutral, low-activation baseline that still demonstrates unmistakable default voice and behavior.
 
-1. If names, metadata, catchphrases, and action beats vanished, would this still sound like this character?
-2. Would a reader of a novel or a viewer hearing the line in a film recognize a stable mind behind the words?
-3. Does the voice remain identifiable in an ordinary low-stakes exchange, not only during an extreme emotion or behavior mode?
-4. Can the distinctive choices be traced to the complete persona rather than an arbitrary verbal gimmick?
-5. Does the voice change naturally by relationship and pressure while remaining recognizably the same person?
-6. Do the samples give another writer or model enough evidence to extrapolate the voice to an unseen prompt?
-7. Do the chosen inputs resemble moments this character is actually likely to encounter, and do the outputs demonstrate their characteristic reactions?
+Make the last exchange self-contained and emotionally settled enough to release its local situation. Give it a broadly reusable topic, an ordinary counterpart, and the character's stable attention and rhythm. This lets a fresh user message begin cleanly while retaining strong character priming.
 
-If any answer is no, the work is not finished. Revisit the causal anchors and rhythm specification, then replace the weakest samples. Do not repair weak identity by adding a catchphrase, accent, unusual punctuation, random quirk, or louder mannerism.
+## Quality scorecard
 
-Aim for decisive recognizability. Push the character's selections of detail, thought order, conversational tactics, syntax, and emotional defenses far enough that the voice leaves a strong impression. Stop before the signals become repetitive, performative without cause, or reduce the person to a caricature.
+Read all outputs consecutively as one performance. Score each dimension from 0 to 2, where 0 means absent, 1 means partial, and 2 means convincing.
 
-### Character-causality test
+| Dimension | A score of 2 means |
+| --- | --- |
+| Causality | notable choices trace back to biography, worldview, desire, relationship, emotion, or mode |
+| Recognition | the speaker remains identifiable without names, catchphrases, metadata, or action beats |
+| Scenario fit | the inputs plausibly belong to this character's life and expose relevant tensions |
+| Behavioral teaching | outputs demonstrate attention, assumptions, priorities, tactics, boundaries, and consequences |
+| Rhythm | sentence mechanics follow a distinctive, varied, context-sensitive pattern |
+| Relationship | register and strategy respond to counterpart, intimacy, and power |
+| Subtext | important feeling or motive becomes inferable through behavior and language |
+| Range | one stable person appears across ordinary, joyful, intimate, pressured, and triggered moments |
+| Speakability | every output fits a plausible breath, mouth, and performance |
+| Transfer | another writer or model could extrapolate the voice to an unseen prompt |
+| Handoff | the final baseline releases its situation and supports a fresh conversation |
 
-Can each notable verbal choice be traced to biography, worldview, desire, relationship, emotion, or an active mode? Remove arbitrary decoration.
+Require at least 18 out of 22 overall and a score of 2 for Recognition, Behavioral teaching, Transfer, and Handoff. Revise the weakest causal layer rather than decorating the surface.
 
-### Full-sheet embodiment test
+## Revision moves
 
-Can every accepted sample be annotated privately with the specific persona facts it embodies? Does the set express the major voice-relevant material from the complete sheet without paraphrasing section text? If not, revise only after rereading the missing sections.
+Use this table to turn a weak result into a stronger construction:
 
-### Scenario-fit test
+| Symptom | Positive revision move |
+| --- | --- |
+| Generic cleverness | choose a detail only this character would notice and a tactic caused by their current desire |
+| Helpful-assistant tone | give the character their own stake, priority, resistance, or social objective |
+| On-the-nose emotion | convert the feeling into action, omission, practical detail, register shift, or displaced concern |
+| Interchangeable rhythm | rebuild the thought using the signature's thought order, clause architecture, and repair behavior |
+| Catchphrase dependence | express the same worldview through a new image, tactic, sentence shape, or relationship |
+| Polished slogan | let the character discover, revise, evade, or qualify the thought in their natural timing |
+| One-note performance | keep the stable identity while changing emotion, status, intimacy, and conversational tactic |
+| Caricature | retain the strongest causal signal and add ordinary baseline behavior plus register variation |
+| Generic scenario | derive the input from a documented duty, relationship, fear, flaw, interest, or trigger |
+| Weak final handoff | move charged material earlier and finish with a self-contained baseline pair |
 
-Is this input unusually relevant or plausibly recurrent for this character because of their life, relationships, duties, interests, fears, flaws, or modes? Could the same prompt appear unchanged in almost any persona sheet? Replace generic prompts unless an ordinary situation is deliberately testing the character's distinctive baseline.
+Repeat this loop:
 
-### Reaction-model test
+1. Identify the weakest scorecard dimension.
+2. Return to the corresponding layer of the voice engine.
+3. Generate alternatives through different tactics.
+4. Read them aloud.
+5. Replace the weakest sample.
+6. Rescore the full performance.
 
-Does the output teach a future model what this character is likely to do conversationally and psychologically, not just how they decorate a sentence? Verify the selected attention, assumption, priority, tactic, and boundary. Across the set, show multiple characteristic reactions rather than one tone repeated under different wording.
+## Compact anti-LLM guardrails
 
-### Blind-speaker test
+Use these as a final diagnostic after the positive draft exists. Check whether the persona truly calls for any of the following:
 
-Hide names and metadata. Could a reader familiar with the persona identify the speaker from choices and rhythm, not one catchphrase? Strengthen the voice if not.
+- automatic reassurance, gratitude, agreement, or offers of help;
+- input repetition followed by a tidy explanatory mini-essay;
+- complete emotional self-analysis in the heat of the moment;
+- generic therapeutic vocabulary, profundity, aphorisms, or motivational closure;
+- negation pivots, mirrored antitheses, rhetorical triads, or repeated fragment punches;
+- em dashes, ellipses, semicolons, names, or signature phrases used as default rhythm;
+- explanations that unpack a joke, metaphor, implication, or already visible emotion;
+- frictionless consensus and uniformly polished eloquence across every social context;
+- generic roleplay beats such as constant sighing, smirking, chuckling, or head tilting;
+- phonetic dialect and identity shorthand built from stereotypes.
 
-### Interchangeability test
-
-Could the line be transferred unchanged to another clever, shy, abrasive, noble, or traumatized character? If yes, rewrite from this character's specific attention and tactic.
-
-### Subtext test
-
-Does the line leave the listener something meaningful to infer? If it explains motive and emotion completely, compress or redirect it unless blunt disclosure is itself the dramatic choice.
-
-### Relationship test
-
-Would the character phrase this identically to a stranger, rival, employer, sibling, and lover? If yes, the sample is missing social context.
-
-### Range test
-
-Do the samples prove a stable voice across different emotions and stakes instead of repeating one performance note?
-
-### Anti-caricature test
-
-Are quirks sparse and context-sensitive? Reduce accents, slang, profanity, verbal tics, and signature metaphors if they dominate the person.
-
-### Read-aloud test
-
-Can the line be spoken naturally in one plausible performance? Revise rhythm and breath without sanding away character.
-
-### Negative-space test
-
-Does `neverSays` identify the tempting default voice the model must avoid? Add concrete negative constraints when drift is predictable, but do not create an exhaustive phrase blacklist.
-
-### Formula scan
-
-Search the outputs for negation pivots, antitheses, rhetorical triads, fragment stacks, mirrored openings, em dashes, hyphenated interruptions, ellipses, and polished closing morals. Remove them unless the character evidence and situation justify that exact construction.
-
-### Fresh-conversation handoff test
-
-Imagine that a completely new user message arrives immediately after the final character output with no other conversation history. Would the last example incorrectly keep an old scene, relationship, mood, behavior mode, task, or topic active? If yes, move that example earlier and place a broadly applicable baseline pair last. Confirm that the last output is complete enough to release its local situation without becoming generic in voice.
-
-## Revision method
-
-When a draft sounds generic, do not ask only for “more personality.” Diagnose and revise in this order:
-
-1. replace the neutral intention with a character-specific tactic;
-2. change what the character notices or refuses to acknowledge;
-3. adjust relationship and status;
-4. introduce subtext or a competing desire;
-5. reshape syntax, rhythm, and diction;
-6. add at most one fitting verbal signature;
-7. remove the sentence that explains what the preceding line already showed.
-
-Generate alternatives from different tactics, not synonym swaps. A deflection, bargain, correction, joke, and threat are meaningfully different candidates; five polished paraphrases are not.
+When a pattern appears without character evidence, rebuild that line through a stronger desire, detail, tactic, relationship, or rhythm rule. When the voice engine genuinely produces it, keep it context-sensitive and demonstrate range elsewhere.
 
 ## Research resources
 
-Use these sources for deeper study. Extract principles and exercises; do not copy protected dialogue examples into persona exports.
+Use these sources for deeper study. Extract principles and exercises while writing original dialogue for the persona.
 
 - [Scriptnotes: Dialogue and Character Voice](https://johnaugust.com/2023/dialogue-and-character-voice) — tests for distinct voices, memorable wording, actor-facing dialogue, and active characters in group scenes.
 - [John August: Writing Off the Page](https://johnaugust.com/2010/writing-off-the-page) — discover voice through disposable conversations outside the plot.
 - [John August: Dialogue Is Meant to Be Spoken](https://johnaugust.com/2010/what-you-see-vs-what-you-say) — use read-aloud testing to catch lines that work visually but fail in the mouth.
-- [Writing Excuses: Developing Subtext](https://writingexcuses.com/17-34-developing-subtext/) — distinguish text, context, and emotional charge; avoid sustained on-the-nose dialogue.
+- [Writing Excuses: Developing Subtext](https://writingexcuses.com/17-34-developing-subtext/) — distinguish text, context, and emotional charge.
 - [Poets & Writers: Hearing Voices](https://www.pw.org/content/hearing_voices_characterization_and_language) — connect idiolect to biography and vary register with context.
 - [Purdue OWL: Writing Compelling Characters](https://owl.purdue.edu/owl/subject_specific_writing/creative_writing/writers/fiction-basics/writing_compelling_characters.html) — ground character action in goals, obstacles, and shortcomings.
-- [Writers.com: How to Write Dialogue in a Story](https://writers.com/how-to-write-dialogue-in-a-story) — differentiate speakers through controlled linguistic choices without overloading quirks or stereotypes.
+- [Writers.com: How to Write Dialogue in a Story](https://writers.com/how-to-write-dialogue-in-a-story) — differentiate speakers through controlled linguistic choices and context.
 - [Controlling Personality-Based Stylistic Variation with Neural Natural Language Generators](https://arxiv.org/abs/1805.08352) — research context for separating semantic fidelity from measurable stylistic realization.
-- [Computational Sociolinguistics: A Survey](https://direct.mit.edu/coli/article/42/3/537/1536/Computational-Sociolinguistics-A-Survey) — evidence that speakers shift style by audience and interaction rather than possessing one unchanging surface voice.
+- [Computational Sociolinguistics: A Survey](https://direct.mit.edu/coli/article/42/3/537/1536/Computational-Sociolinguistics-A-Survey) — evidence that speakers shift style by audience and interaction.
 - [Bucholtz and Hall: Identity and Interaction](https://bucholtz.linguistics.ucsb.edu/sites/secure.lsit.ucsb.edu.ling.d7_b/files/sitefiles/research/publications/BucholtzHall2005-DiscourseStudies.pdf) — sociolinguistic model of identity as socially positioned and produced through interaction.
-- [Communication Accommodation Theory: Past Accomplishments and Current Trends](https://www.sciencedirect.com/science/article/pii/S0388000123000360) — framework for why speakers move toward or away from another person's style to manage identity, distance, and power.
+- [Communication Accommodation Theory: Past Accomplishments and Current Trends](https://www.sciencedirect.com/science/article/pii/S0388000123000360) — framework for style shifts that manage identity, distance, and power.

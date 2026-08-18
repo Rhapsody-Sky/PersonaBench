@@ -161,19 +161,19 @@ When creating, revising, or judging dialogue or the `speechStyle`, `vocabulary`,
 
 Write sample dialogues only after reading the complete character sheet. Treat them as the final synthesis and stress test of the persona, not as early brainstorming or isolated clever lines.
 
-Use paired examples:
+Use paired examples. For a proud logistics-minded character who converts fear into planning:
 
 ```json
 {
   "id": "a-unique-id",
-  "input": "You could just walk away. Why stay?",
-  "output": "Because leaving is easy. Living with it afterward is the expensive part."
+  "input": "Are you worried she'll leave?",
+  "output": "Her train is at six. I moved the meeting to five-thirty."
 }
 ```
 
 Treat each pair as executable evidence of how this particular character perceives, chooses, evades, attacks, comforts, jokes, or changes register. Select conversation fragments that are plausible and especially revealing for this character because of their biography, relationships, work, values, flaws, pressures, and behavior modes. Derive the line from that context before styling the prose. Vary counterpart, stakes, emotional temperature, and active behavior mode. Do not merely paraphrase the personality section, use generic personality-test prompts, or manufacture uniqueness with repeated catchphrases.
 
-Before accepting a set, run the reference's blind-speaker, subtext, interchangeability, read-aloud, anti-LLM, and final performance tests. Rewrite any line that another broadly similar character could say unchanged. Do not finish until the complete set is recognizably this character without relying on names, catchphrases, or action beats.
+Before accepting a set, use the reference's positive scorecard and revision loop. Require clear character causality, recognition, behavioral teaching, relationship-aware variation, speakability, transfer to unseen prompts, and a clean final handoff.
 
 Preserve intentional dialogue order. Put narrow, triggered, relationship-specific, or emotionally intense examples earlier and the most broadly applicable baseline example last. Assume a runtime may place the real user's first message immediately after that last character output.
 
