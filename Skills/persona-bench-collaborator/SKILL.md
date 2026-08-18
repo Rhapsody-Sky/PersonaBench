@@ -1,6 +1,6 @@
 ---
 name: persona-bench-collaborator
-description: Create, inspect, revise, validate, and explain Persona Bench personas and JSON files, including layered character design, distinctive voices, and high-quality sample dialogue. Use when an LLM or agent helps a human design a multidimensional character, develops or audits speech style, writes dialogue that must not sound generic or AI-generated, edits a Persona Bench Builder backup, explains persona sections or behavior modes, prepares TomoriBot or general-LLM exports, or guides a user through exporting and reimporting a Persona Bench project.
+description: Create, inspect, revise, validate, and explain Persona Bench personas and JSON files, including layered character design, distinctive voices, character-faithful dialogue options, and high-quality sample dialogue. Use when an LLM or agent helps a human design a multidimensional character, develops or audits speech style, explores several plausible things a character could say next, writes dialogue that must not sound generic or AI-generated, edits a Persona Bench Builder backup, explains persona sections or behavior modes, prepares TomoriBot or general-LLM exports, or guides a user through exporting and reimporting a Persona Bench project.
 ---
 
 # Persona Bench Collaborator
@@ -113,12 +113,14 @@ Every key in `sections` contains:
 | `secrets` | True but normally undisclosed facts whose revelation depends on trust and pressure. |
 | `boundaries` | Hard limits that cause refusal, redirection, objection, or withdrawal. |
 | `continuity` | Canonical facts that must remain consistent across interactions. |
-| `speechStyle` | Sentence length, pacing, directness, rhetorical structure, and expressive range. |
-| `vocabulary` | Register, recurring metaphors, preferred terms, nicknames, and avoided language. |
-| `mannerisms` | Emotional subtext conveyed through tone, timing, emphasis, or verbal behavior. |
-| `neverSays` | Negative voice constraints: phrases, attitudes, or registers that break character. |
+| `speechStyle` | Observable speech mechanics: thought order, sentence and turn length, pacing, pause placement, interruption and repair habits, directness, information release, and context-sensitive rhythm shifts. |
+| `vocabulary` | Lexical fingerprint: ordinary function words, contractions, fillers, hedges, intensifiers, preferred verbs and nouns, address terms, swearing, specialist language, metaphor sources, register shifts, and deliberately avoided wording. |
+| `mannerisms` | Tone and mannerisms as performance: prosody, emphasis, volume, tempo, articulation, response latency, meaningful silences, gaze, microexpressions, posture, gesture habits, and behavioral leakage that reveals what the words conceal. |
+| `neverSays` | Negative voice constraints: wording, register, rhetorical moves, emotional explicitness, social behaviors, or stock responses that would break character; when useful, state what the character does instead. |
 
 Write information in the most specific applicable section. Avoid repeating the same sentence across multiple sections. Preserve useful tension—for example, a stated value may conflict with a fear or weakness.
+
+For `speechStyle`, `vocabulary`, `mannerisms`, and `neverSays`, write **operational evidence for a downstream model**, not adjective summaries. A useful rule predicts something observable in a line or performance: which small words the character chooses, where a pause falls, how a sentence repairs itself, which word receives emphasis, what the eyes or mouth do under pressure, or what behavior leaks through a controlled statement. Capture a baseline plus the triggers that alter it. Prefer “answers too quickly when hiding concern, then adds a quieter corrective after a beat” over “guarded and awkward.” Keep the four fields complementary rather than duplicating the same trait in different wording.
 
 ## Layered character construction
 
@@ -184,6 +186,16 @@ Keep reusable voice mechanics in `speechStyle`, `vocabulary`, `mannerisms`, and 
 Before accepting a set, use the reference's positive scorecard and revision loop. Require clear character causality, recognition, behavioral teaching, relationship-aware variation, speakability, transfer to unseen prompts, and a clean final handoff.
 
 Preserve intentional dialogue order. Put narrow, triggered, relationship-specific, or emotionally intense examples earlier and the most broadly applicable baseline example last. Assume a runtime may place the real user's first message immediately after that last character output.
+
+### Dialogue option mode
+
+When the human asks for several possible things the character could say in one specific moment, alternate replies, response candidates, dialogue choices, or help deciding what a sample dialogue output should be, also read [references/dialogue-options.md](references/dialogue-options.md) completely.
+
+Treat an option set as **one person in one moment making several plausible conversational decisions**. Hold canon, knowledge, relationship, emotional state, active modes, and core voice constant. Create diversity through different immediate tactics and competing priorities, not through synonym rewrites or a generic polite/funny/angry menu. Generate the behavioral fork before styling the sentence.
+
+Keep every option inside the character's epistemic limits. They may misunderstand, deflect, challenge the premise, conceal, over-explain, joke badly, withdraw, or say something inconvenient when the sheet and moment support it. Prefer character-faithful friction over default assistant-like cooperation.
+
+If the human asks for options without a count, return four to six strong forks or fewer when the character genuinely has fewer plausible choices. Use short action labels unless the human asks for lines only. Never write those labels into `sampleDialogues`; after selection, store only the chosen `input` and `output`.
 
 ## Avatar structure
 
@@ -253,6 +265,7 @@ Before returning an edited Builder backup, verify:
 - The overall sheet contains important axes that are not predictable from one base archetype.
 - Sample outputs vary in length according to situation and conversational function; longer turns are exceptional and purposeful.
 - Voice fields state reusable rules, while sample dialogues demonstrate those rules without becoming explanatory walls of text.
+- When dialogue options are requested, candidates preserve one shared scene state and knowledge boundary while differing in conversational action and likely consequence; reject tone-wheel menus and paraphrase sets.
 - Timestamps are valid ISO-8601 strings and `revision` is a positive integer.
 - Avatar base64 data, unknown fields, and unrelated user content remain intact.
 - The result parses as strict JSON.

@@ -1,12 +1,13 @@
 # Character Voice and Sample Dialogue
 
-Use this reference when writing or evaluating Persona Bench voice fields and sample dialogues. Produce dialogue that reveals one specific mind making characteristic choices, not merely prose with decorative quirks.
+Use this reference when writing or evaluating Persona Bench voice fields and sample dialogues. Produce dialogue that reveals one specific mind making characteristic choices, not merely prose with decorative quirks. When the task is to surface multiple possible replies for one moment instead of selecting one sample, use this reference together with [dialogue-options.md](dialogue-options.md).
 
 ## Contents
 
 - [Target result](#target-result)
 - [Production loop](#production-loop)
 - [Build the voice engine](#build-the-voice-engine)
+- [Write the four Persona Bench voice fields](#write-the-four-persona-bench-voice-fields)
 - [Design the sample portfolio](#design-the-sample-portfolio)
 - [Draft each exchange](#draft-each-exchange)
 - [Use subtext and mannerisms](#use-subtext-and-mannerisms)
@@ -26,8 +27,9 @@ Create an ordered set of six to ten user-character exchanges when the project al
 - which conversational tactics they choose;
 - how biography and environment shape rhythm and vocabulary;
 - how relationship, status, emotion, and behavior modes alter the voice;
+- how timing, delivery, gaze, expression, body, and behavioral leakage make emotion visible without explaining it;
 - how they enforce boundaries, reveal care, manage shame, enjoy things, and recover from conflict;
-- what their stable baseline sounds like immediately before a new conversation begins.
+- what their stable baseline sounds and looks like immediately before a new conversation begins.
 
 Aim for decisive recognizability. A reader or listener should sense the same person across ordinary, intimate, funny, pressured, and triggered moments, even with names and metadata hidden.
 
@@ -91,6 +93,171 @@ Stable identity: across every register, they continue to ___.
 ```
 
 Turn broad adjectives into mechanics. Translate “witty” into a humor method and target. Translate “guarded” into the topics, tactics, and sentence changes used to protect something. Translate “unusual rhythm” into a repeatable thought order and clause pattern.
+
+
+## Write the four Persona Bench voice fields
+
+Treat `speechStyle`, `vocabulary`, `mannerisms`, and `neverSays` as a compact **character-performance specification** for the runtime model. These fields should let another model infer not only what the character means, but what it feels like to hear and watch them speak.
+
+Build the specification from observable channels:
+
+- **lexical fingerprint:** small everyday choices such as `yes` / `yeah` / `mhm`, contractions, fillers, hedges, intensifiers, preferred verbs and nouns, address terms, swearing, euphemisms, specialist terms, recurring metaphor domains;
+- **syntax:** clause length, thought order, fragments, nesting, self-correction, afterthoughts, repetition, sentence completion, and what happens to grammar under pressure;
+- **timing:** response latency, pause placement, interruption habits, tolerance for silence, trailing off, delayed afterthoughts, and whether the character talks to prevent silence;
+- **delivery / prosody:** tempo, volume, emphasis, pitch movement when useful in prose, articulation, breath, laughter inside speech, words that become unusually careful or quiet;
+- **face:** characteristic eye, brow, mouth, jaw, smile, blink, or stillness behavior when emotion leaks through;
+- **gaze:** baseline eye contact, monitoring, looking away, looking directly at someone under threat, glancing at exits, hands, objects, or another person's reaction;
+- **body:** posture, hand behavior, distance, repetitive gestures, movement under stress, fidgeting, freezing, or practical activity used to avoid exposure;
+- **leakage:** the involuntary cue that contradicts or complicates the controlled verbal message;
+- **interaction:** who gets interrupted, how questions are answered or dodged, how conversational control is taken or surrendered, and how response length changes by relationship or stakes.
+
+Do not maximize detail in every field. Select the **few repeatable signals with the highest identity value**. A model learns more from three causal, trigger-bound behaviors than from a catalogue of generic gestures.
+
+### `speechStyle` — structure, rhythm, and timing
+
+Use this field for **how thoughts become turns of speech**. Record mechanics that can survive many topics:
+
+- default sentence and turn length, with meaningful exceptions;
+- thought order and rhetorical architecture;
+- pace and response latency;
+- pause placement and silence tolerance;
+- interruption, overlap, trailing-off, and afterthought patterns;
+- self-correction and repair behavior;
+- directness, hedging, qualification, and information-release order;
+- how intimacy, authority, embarrassment, anger, fear, excitement, fatigue, or an active behavior mode changes those mechanics.
+
+Write rules with baseline + trigger + manifestation whenever possible.
+
+Weak:
+
+> Speaks tersely and pauses when nervous.
+
+Stronger:
+
+> Defaults to short conclusion-first answers. When a question touches something personal, she often answers a fraction too quickly, stops, then adds a quieter correction after a beat. She tolerates other people's silence but fills her own only when she realizes she has revealed too much.
+
+The stronger version teaches **where** the pause happens and **what causes it**.
+
+### `vocabulary` — the lexical fingerprint
+
+Use this field for **which words this person reaches for without thinking**. Small words often transfer identity better than exotic catchphrases.
+
+Capture relevant patterns such as:
+
+- `yes` / `yeah` / `yep` / `mhm`; `no` / `nah`; `I don't know` / `dunno` / `how would I know?`;
+- contraction habits;
+- fillers, hesitation words, hedges, intensifiers, softeners, and discourse markers;
+- preferred verbs, nouns, sensory terms, evaluative words, and degrees of precision;
+- terms of address, names, titles, nicknames, pet names, and when they are used or withheld;
+- profanity: frequency, targets, severity, and situations that suppress or release it;
+- technical or occupational distinctions the character notices naturally;
+- idiom and metaphor sources grounded in biography, work, place, hobbies, or community;
+- euphemisms and topics whose direct vocabulary they avoid;
+- code-switching or register shifts by audience and power relationship.
+
+Avoid thesaurus lists and decorative signature phrases. State **choice behavior**.
+
+Weak:
+
+> Uses casual slang and technical vocabulary.
+
+Stronger:
+
+> Uses “yeah” for ordinary agreement and “yes” mainly when becoming formal or shutting down ambiguity. Rarely says a person's name mid-conversation unless correcting, warning, or trying to make a private point land. Describes mechanical problems with exact verbs but emotional states with vague placeholders such as “that” or “this whole thing.”
+
+### `mannerisms` — tone, delivery, face, body, and leakage
+
+Use this field for **what can be heard or seen around the words**. This is where tone becomes physical performance rather than an adjective.
+
+Cover only character-relevant signals from:
+
+- tempo, volume, emphasis, articulation, breath, laughter, and vocal drop-off;
+- meaningful pauses that function as behavior rather than punctuation decoration;
+- eye contact and gaze shifts;
+- microexpressions: corners of the mouth, jaw set, brow movement, blinking, smiles that do or do not reach the eyes, sudden stillness;
+- posture, hand use, object handling, proximity, fidgeting, freezing, repetitive self-contact, or practical activity;
+- **leakage:** what the body reveals while the character verbally tries to project something else.
+
+Tie recurring cues to triggers and meanings, while allowing variation. Do not prescribe the same stage direction every time the emotion appears.
+
+Weak:
+
+> Smirks when amused, looks away when nervous, sighs a lot.
+
+Stronger:
+
+> Holds eye contact comfortably during ordinary disagreement, but breaks it toward objects rather than the floor when intimacy becomes too direct. Under irritation the face gets quieter: jaw shifts once, mouth flattens, gestures stop. When verbally insisting that something does not matter, her hands often keep working at whatever object is nearby, creating a visible contradiction between control in the voice and tension in the body.
+
+A mannerism earns space when it teaches a reusable relationship between **trigger, attempted presentation, and visible leak**.
+
+### `neverSays` — negative constraints with replacement behavior
+
+Use this field for patterns that would make a downstream model sound like the wrong person. Cover more than banned phrases.
+
+Useful constraints can prohibit:
+
+- particular words, pet phrases, slang, honorifics, or levels of profanity;
+- registers that are too formal, cute, therapeutic, florid, corporate, academic, macho, deferential, etc.;
+- rhetorical habits the model otherwise tends to invent, such as tidy moral summaries, motivational reassurance, polished aphorisms, or exhaustive emotional explanation;
+- forms of self-knowledge the character would not articulate in the moment;
+- social responses that violate their interpersonal style, such as automatically apologizing, validating, comforting, asking permission, or explaining a joke;
+- delivery patterns that break the performance, such as constant quipping, constant smirking, or using ellipses for every hesitation.
+
+Where useful, pair the prohibition with the character's **natural substitute** so the field guides generation instead of merely shrinking it.
+
+Weak:
+
+> Would never say “I understand how you feel.”
+
+Stronger:
+
+> Does not use therapist-like validation or summarize another person's feelings back to them. When she cares, she usually responds to one concrete problem, stays physically present, asks a narrow practical question, or offers a small fact about herself instead.
+
+Another useful form:
+
+> Rarely names her own fear cleanly while it is active. Avoid lines such as “I'm pushing you away because I'm scared of losing you.” The same state should surface through delay, misdirected practicality, a failed joke, an aborted admission, or unusually blunt fragments unless the scene has specifically earned direct disclosure.
+
+### Keep the four fields complementary
+
+Use this division when the same observation could fit several places:
+
+- **Speech style:** *where and how the pause happens*.
+- **Vocabulary:** *which word is chosen on either side of the pause*.
+- **Tone and mannerisms:** *how the word sounds and what the face/body does during it*.
+- **Things they would never say:** *which tempting generic realization, phrase, or response pattern must not replace that performance*.
+
+Do not copy one trait into all four fields. Together they should form a compact executable model.
+
+### Derive rules from contrasts, not labels
+
+When filling these fields from an incomplete sheet, privately test several emotionally different moments: ordinary conversation, disagreement, embarrassment, intimacy, delight, pressure, and repair. Ask what remains stable and what changes. Prefer a rule that distinguishes the character from a plausible alternative person.
+
+For every proposed rule, ask:
+
+1. **Can I demonstrate it in one line or action beat?**
+2. **Do I know what triggers it?**
+3. **Would changing this rule make the speaker feel like a different person?**
+4. **Does it predict unseen dialogue rather than merely describe an existing sample?**
+5. **Is it specific enough to prevent generic LLM defaults without becoming a catchphrase or compulsory gesture?**
+
+If most answers are no, sharpen or remove the rule.
+
+### Performance-field quality gate
+
+Score the four fields together from 0 to 2 on each dimension:
+
+| Dimension | A score of 2 means |
+| --- | --- |
+| Operational specificity | rules predict observable word, timing, delivery, gaze, face, body, or interaction behavior |
+| Causal grounding | important patterns have plausible roots in biography, relationship habits, goals, defenses, or practiced roles |
+| Trigger sensitivity | the spec explains how baseline behavior shifts under intimacy, power, stress, delight, or active modes |
+| Lexical identity | vocabulary includes ordinary small-word and register choices, not merely signature phrases or topic nouns |
+| Performance identity | tone/mannerisms provide a sparse but recognizable delivery, gaze, expression, body, and leakage vocabulary |
+| Negative guidance | `neverSays` blocks likely model failures and often supplies a more characteristic substitute behavior |
+| Complementarity | the four fields divide labor instead of repeating the same adjectives |
+| Transfer | a fresh model could write an unseen exchange that sounds and moves like the same person |
+
+Require at least **14 out of 16**, with a 2 in Operational specificity, Performance identity, Complementarity, and Transfer before treating the voice fields as finished.
 
 ### Specify rhythm precisely
 
@@ -162,14 +329,16 @@ Make extended samples exceptional within the set. Give every sentence an active 
 
 For every pair, make these private decisions before writing the final output:
 
-1. Identify what the other speaker wants.
-2. Give the character one immediate conversational desire.
-3. Choose a tactic: deflect, correct, test, bargain, impress, teach, conceal, threaten, comfort, joke, withdraw, reconnect, or another fitting action.
-4. Select the details this character would notice first.
-5. Select two to four persona facts that should shape the response silently.
-6. Pass the thought through the defined rhythm, diction, register, and mannerism triggers.
-7. Choose the shortest natural length that completes the character's immediate tactic.
-8. Let the output change something: terms, distance, knowledge, trust, tension, or direction.
+1. Establish what the character actually knows, believes, suspects, and may misunderstand in this moment.
+2. Identify what the other speaker wants.
+3. Give the character one immediate conversational desire.
+4. Choose a tactic: deflect, correct, test, bargain, impress, teach, conceal, threaten, comfort, joke, withdraw, reconnect, or another fitting action.
+5. Select the details this character would notice first.
+6. Select two to four persona facts that should shape the response silently.
+7. Pass the thought through the defined rhythm, diction, register, and mannerism triggers.
+8. Choose one or two high-information performance cues when the moment needs them: pause placement, emphasis, response latency, gaze, microexpression, gesture, posture, or leakage. Do not decorate every line.
+9. Choose the shortest natural length that completes the character's immediate tactic.
+10. Let the output change something: terms, distance, knowledge, trust, tension, or direction.
 
 Silently draft at least three candidates with different tactics. Compare a deflection, correction, bargain, joke, or refusal rather than producing synonym variants. Select the candidate that reveals the most character with the least explanation.
 
@@ -196,9 +365,11 @@ Use direct disclosure when bluntness, trust, exhaustion, confrontation, or growt
 
 ### Make mannerisms functional
 
-Use verbal mannerisms to carry timing and strategy: delayed answers, exact corrections, unfinished admissions, compulsive qualification, topic pivots, echoed words, strategic silence, mistimed jokes, or abrupt register changes.
+Use mannerisms to carry timing and strategy: delayed answers, exact corrections, unfinished admissions, compulsive qualification, topic pivots, echoed words, strategic silence, mistimed jokes, abrupt register changes, gaze shifts, microexpressions, hand behavior, posture changes, or deliberate stillness.
 
-Tie each mannerism to a trigger and purpose. A correction can restore control; an unfinished sentence can protect shame; an echoed phrase can challenge someone without answering them. If a physical beat is canonical and the format supports it, use one that adds subtext the words cannot carry alone.
+Tie each mannerism to a trigger and purpose. A correction can restore control; an unfinished sentence can protect shame; an echoed phrase can challenge someone without answering them; a too-steady gaze can be armor; hands continuing a task can leak tension beneath a controlled answer. If the target dialogue format supports physical beats, use them sparingly and only when they add character information the words cannot carry alone. Prefer precise cues such as “her jaw shifts once” or “he looks at the door before answering” over generic emotion labels such as “she looks nervous.”
+
+When words and behavior disagree, preserve that contradiction instead of explaining it. A controlled “Fine” paired with a stopped hand, delayed breath, fixed smile, or glance toward the exit can teach more character than an explicit statement of the hidden feeling.
 
 ## Order for conversation handoff
 
@@ -224,6 +395,7 @@ Read all outputs consecutively as one performance. Score each dimension from 0 t
 | Scenario fit | the inputs plausibly belong to this character's life and expose relevant tensions |
 | Behavioral teaching | outputs demonstrate attention, assumptions, priorities, tactics, boundaries, and consequences |
 | Rhythm | sentence mechanics follow a distinctive, varied, context-sensitive pattern |
+| Micro-performance | timing, emphasis, gaze, expression, body, or leakage are used selectively and character-specifically rather than as generic roleplay decoration |
 | Length dynamics | responses visibly vary in size according to tactic, stakes, relationship, and speech act; every extended turn earns its space |
 | Relationship | register and strategy respond to counterpart, intimacy, and power |
 | Subtext | important feeling or motive becomes inferable through behavior and language |
@@ -232,7 +404,7 @@ Read all outputs consecutively as one performance. Score each dimension from 0 t
 | Transfer | another writer or model could extrapolate the voice to an unseen prompt |
 | Handoff | the final baseline releases its situation and supports a fresh conversation |
 
-Require at least 20 out of 24 overall and a score of 2 for Recognition, Behavioral teaching, Length dynamics, Transfer, and Handoff. Revise the weakest causal layer rather than decorating the surface.
+Require at least 22 out of 26 overall and a score of 2 for Recognition, Behavioral teaching, Micro-performance, Length dynamics, Transfer, and Handoff. Revise the weakest causal layer rather than decorating the surface.
 
 ## Revision moves
 
